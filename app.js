@@ -99,7 +99,7 @@
   const today = vegasNow();
   const state = {
     page: 'home',
-    day: DAYS.some(day => day.date === saved.day) ? saved.day : (dateInfo(today.date) ? today.date : DAYS[0].date),
+    day: (dateInfo(today.date) || dateInfo(saved.day) || DAYS[0]).date,
     mode: ['plan', 'run'].includes(saved.mode) ? saved.mode : 'plan',
     checks: Array.isArray(saved.checks) ? saved.checks.filter(value => Number.isInteger(value) && value >= 0 && value < CHECKS.length) : [],
     query: '',
@@ -131,12 +131,31 @@
     return `<span class="status-label ${type}">${icon(symbol)}${label}</span>`;
   }
 
+  function updateTodayButtons(date) {
+    const day = dateInfo(date);
+    $$('[data-today]').forEach(button => {
+      button.disabled = !day;
+      button.title = day ? `ラスベガスの今日（${day.short}）へ` : 'ラスベガスの今日は旅程外です';
+    });
+  }
+
+  function revealSelectedDay() {
+    const picker = $(`#${state.page}-days`);
+    const selected = picker?.querySelector('[aria-pressed="true"]');
+    if (!selected || !picker.clientWidth) return;
+    const bounds = picker.getBoundingClientRect();
+    const date = selected.getBoundingClientRect();
+    if (date.left < bounds.left) picker.scrollLeft += date.left - bounds.left - 3;
+    if (date.right > bounds.right) picker.scrollLeft += date.right - bounds.right + 3;
+  }
+
   function renderDays() {
     const focusId = document.activeElement?.id;
     ['home', 'schedule'].forEach(section => {
       $(`#${section}-days`).innerHTML = DAYS.map((day, index) => `<button type="button" id="day-${section}-${index}" data-day="${day.date}" aria-pressed="${state.day === day.date}" aria-label="${day.short} ${day.ja}曜日"><span class="day-en">${day.en}</span><span class="day-date">${day.short}</span></button>`).join('');
     });
     $('#route-day').value = state.day;
+    revealSelectedDay();
     if (focusId?.startsWith('day-')) document.getElementById(focusId)?.focus({ preventScroll: true });
   }
 
@@ -151,14 +170,16 @@
     const first = current.date === state.day ? sessions.find(event => minutes(event.end) > current.minute) : sessions[0];
     $('#home-day-title').textContent = dateInfo(state.day).long;
     $('#route-card-title').textContent = 'この日のルート';
-    if (!sessions.length && events.some(event => event.tour)) { renderJourneyHome(events.filter(event => event.tour)); return; }
+    if (!sessions.length && events.some(event => event.tour)) { renderJourneyHome(events.filter(event => event.tour), current.date === state.day); return; }
     if (first) {
       const started = current.date === state.day && minutes(first.start) <= current.minute;
       const upcoming = current.date === state.day && !started;
       const queue = events.find(event => event.kind === 'queue' && event.end === first.start);
-      $('#first-card').innerHTML = `<div class="first-top"><span class="eyebrow">${started ? 'IN PROGRESS · 進行中' : upcoming ? 'UP NEXT · 次の予定' : 'FIRST UP · 最初の予定'}</span>${badge(first)}</div><div class="first-time">${escape(first.start)}<span>— ${escape(first.end)}</span></div><h2 class="first-title">${escape(first.label)}</h2>${first.english ? `<p class="first-english">${escape(first.english)}</p>` : ''}<div class="venue-line"><span class="venue-icon">${icon('pin')}</span><div class="venue-copy"><strong>${escape(first.venue || '会場は未確認')}</strong><span>${escape(roomLabel(first))}${first.id ? ` · ${escape(first.id)}` : ''}</span></div></div><div class="first-bottom"><p>${['social', 'run', 'registration'].includes(first.kind) ? escape(first.summary) : queue ? `<b>${escape(queue.start)}</b> 入場待ち開始の目安` : '入場の案内は公式Agendaで確認'}</p><button class="primary-button" data-event="${first.uid}">予定の詳細${icon('arrow')}</button></div>`;
+      const heading = started ? '進行中' : upcoming ? '次の予定' : '最初の予定';
+      const room = first.room ? roomLabel(first) : first.location || roomLabel(first);
+      $('#first-card').innerHTML = `<div class="first-top"><span class="eyebrow">${dayLabel(first.date)} · ${heading}</span>${badge(first)}</div><div class="first-time">${escape(first.start)}<span>— ${escape(first.end)} PST</span></div><h2 class="first-title">${escape(first.label)}</h2>${first.english ? `<p class="first-english">${escape(first.english)}</p>` : ''}<div class="venue-line"><span class="venue-icon">${icon('pin')}</span><div class="venue-copy"><strong>${escape(first.venue || '会場は未確認')}</strong><span>${escape(room)}${first.id ? ` · ${escape(first.id)}` : ''}</span></div></div><div class="first-bottom"><p>${['social', 'run', 'registration'].includes(first.kind) ? escape(first.summary) : queue ? `<b>${escape(queue.start)}</b> 入場待ち開始の目安` : '入場の案内は公式Agendaで確認'}</p><button class="primary-button" data-event="${first.uid}">予定の詳細${icon('arrow')}</button></div>`;
     } else {
-      $('#first-card').innerHTML = `<div class="first-top"><span class="eyebrow">THAT'S A WRAP</span>${icon('check')}</div><div class="first-time">おつかれさま。</div><h2 class="first-title">この日の予定は終了しました。</h2><p class="first-english">気になったことを振り返って、次の一日に備えましょう。</p><div class="first-bottom"><button class="primary-button" data-go="schedule">一日を振り返る${icon('arrow')}</button></div>`;
+      renderFinishedHome();
     }
     const stops = travels.length ? [travels[0].from, ...travels.map(event => event.to)] : [...new Set(sessions.map(event => event.venue).filter(Boolean))];
     $('#home-route').innerHTML = stops.map((name, index) => `${index ? `<div class="route-connector">${icon('clock')}${duration(travels[index - 1])}分の移動枠</div>` : ''}<div class="route-stop"><span class="route-stop-dot" aria-hidden="true"></span><span>${escape(venue(name)?.short || name)}</span></div>`).join('') + (travels.length ? '' : '<p class="route-single">会場間の移動はないプラン。<br>同じ施設内でも、部屋まで余裕をもって。</p>');
@@ -168,9 +189,19 @@
     $('#home-agenda').innerHTML = sessions.map(event => `<button class="preview-row" data-event="${event.uid}"><span class="preview-time">${escape(event.start)}</span><span><span class="preview-label">${escape(event.label)}</span><span class="preview-venue">${escape(event.venue || '会場は未確認')} · ${escape(status(event)[1])}</span></span>${icon('chevron')}</button>`).join('');
   }
 
-  function renderJourneyHome(events) {
-    const first = events[0];
-    $('#first-card').innerHTML = `<div class="first-top"><span class="eyebrow">JTB B1 · この日の最初の予定</span>${badge(first)}</div><div class="first-time">${escape(first.start)}<span>${escape(first.startZone)}</span></div><h2 class="first-title">${escape(first.label)}</h2><p class="first-english">${escape(first.detail)}</p><div class="venue-line"><span class="venue-icon">${icon(first.kind === 'arrival' ? 'plane' : 'pin')}</span><div class="venue-copy"><strong>${escape(first.place)}</strong><span>${dayLabel(first.date)} · 現地時間 ${escape(first.startZone)}</span></div></div><div class="first-bottom"><p>便・集合場所は最終しおりで確認</p><button class="primary-button" data-event="${first.uid}">行程の詳細${icon('arrow')}</button></div>`;
+  function renderFinishedHome() {
+    $('#first-card').innerHTML = `<div class="first-top"><span class="eyebrow">${dayLabel(state.day)}</span>${icon('check')}</div><div class="first-time">おつかれさま。</div><h2 class="first-title">この日の予定は終了しました。</h2><p class="first-english">気になったことを振り返って、次の一日に備えましょう。</p><div class="first-bottom"><button class="primary-button" data-go="schedule">一日を振り返る${icon('arrow')}</button></div>`;
+  }
+
+  function renderJourneyHome(events, isToday) {
+    const now = Date.now();
+    const first = isToday ? events.find(event => event.timeSuffix || Date.parse(event.endISO || event.startISO) >= now) : events[0];
+    if (first) {
+      const heading = isToday ? (Date.parse(first.startISO) <= now ? '進行中' : '次の予定') : '最初の予定';
+      $('#first-card').innerHTML = `<div class="first-top"><span class="eyebrow">${dayLabel(first.date)} · ${heading}</span>${badge(first)}</div><div class="first-time">${escape(first.start)}<span>${escape(first.startZone)}</span></div><h2 class="first-title">${escape(first.label)}</h2><p class="first-english">${escape(first.detail)}</p><div class="venue-line"><span class="venue-icon">${icon(first.kind === 'arrival' ? 'plane' : 'pin')}</span><div class="venue-copy"><strong>${escape(first.place)}</strong></div></div><div class="first-bottom"><p>便・集合場所は最終しおりで確認</p><button class="primary-button" data-event="${first.uid}">行程の詳細${icon('arrow')}</button></div>`;
+    } else {
+      renderFinishedHome();
+    }
     let stops, connections;
     if (state.day === TRIP.start) {
       $('#route-card-title').textContent = 'ラスベガスへ';
@@ -278,7 +309,7 @@
 
   function setupMap() {
     const options = VENUES.map(item => `<option value="${escape(item.name)}">${escape(item.short)}</option>`).join('');
-    $('#origin').innerHTML = options;
+    $('#origin').innerHTML = '<option value="" disabled>出発地を選択</option>' + options;
     $('#destination').innerHTML = options;
     $('#route-day').innerHTML = DAYS.map(day => `<option value="${day.date}">${day.short}（${day.ja}）</option>`).join('');
     $('#venue-map').style.aspectRatio = `${GEO.width} / ${GEO.height}`;
@@ -350,7 +381,7 @@
       return `<path class="route-casing" d="${d}"/><path class="map-route route-${leg.kind}" d="${d}"/>`;
     }).join('') : '';
     if (route?.mode === 'transit') $('#map-stations').removeAttribute('hidden');
-    $('#map-route-notice').textContent = route ? '地図データから求めた移動候補です。現地の通行可否・大会入口・館内経路は未検証です。' : '同一施設内の経路は未確認です。館内マップで確認してください。';
+    $('#map-route-notice').textContent = route ? '地図データから求めた移動候補です。現地の通行可否・大会入口・館内経路は未検証です。' : from ? '同一施設内の経路は未確認です。館内マップで確認してください。' : '出発地を選ぶと移動候補を表示します。';
     return route;
   }
 
@@ -380,28 +411,7 @@
   function updatePlanner() {
     const from = $('#origin').value;
     const to = $('#destination').value;
-    const selected = state.mapAllocation;
-    const estimate = selected?.from === from && selected.to === to ? { value: duration(selected), origin: 'assumed' } : allocation(from, to);
-    const route = routeOverview(from, to);
     renderMapRoute(from, to);
-    $('#route-guide').innerHTML = `<span class="field-label">道のりの概要</span><h3>${escape(route.title)}</h3>${route.steps.length ? `<ol class="route-steps">${route.steps.map(step => `<li>${escape(step)}</li>`).join('')}</ol>` : ''}<p>${escape(route.note)}</p><a class="text-link" href="${escape(route.source.url)}" target="_blank" rel="noopener noreferrer">${escape(route.source.label)}${icon('external')}</a>`;
-    const entry = Number($('#entry-buffer').value);
-    const arrival = $('#arrival-time').value;
-    $('#travel-number').innerHTML = `${estimate.value}<span>分</span><small>${estimate.origin === 'assumed' ? '5K Run案の仮枠・未実測' : ['draft', 'hotel'].includes(estimate.origin) ? '仮置き・未実測' : estimate.origin === 'same' ? '同一会場内の仮置き' : '添付行程の計画枠'}</small>`;
-    $('#travel-description').textContent = estimate.origin === 'same' ? '同じ施設でも部屋が離れる場合があります。施設内移動として仮に15分を確保。' : '交通の待ち・館内移動を含む予定上の枠です。実測の所要時間ではありません。';
-    $('#estimate-source').textContent = estimate.origin === 'assumed' ? `${selected.detail.split(' · ').slice(1).join(' · ')} 実測の所要時間ではありません。` : estimate.origin === 'source' ? '添付HTMLの移動枠を使用。逆方向も同じ枠で仮置きしています。経路・交通状況の実測値ではありません。' : estimate.origin === 'same' ? '施設内移動は15分の仮置きです。階・部屋・混雑に応じて余裕を追加してください。' : estimate.origin === 'hotel' ? 'ホテル⇔会場の時間はJTBのPDFに記載がありません。近隣45分・MGM60分の仮の計画枠です。空港への専用バスとは別の移動です。' : '元の行程にない区間です。近隣45分・MGMを含む区間60分で仮置きしています。公式案内や実際の経路で調整してください。';
-    if (/^\d{2}:\d{2}$/.test(arrival)) {
-      const departure = minutes(arrival) - estimate.value - entry;
-      $('#departure-result').innerHTML = `<p>出発時刻の目安</p><strong>${departure < 0 ? '前日 ' : ''}${formatTime(departure)}<span>に出発</span></strong><small>${escape(arrival)} 開始 − 移動 ${estimate.value}分 − 入場待ち ${entry}分</small>`;
-    } else {
-      $('#departure-result').innerHTML = '<p>セッションの開始時刻を入力してください。</p>';
-    }
-    const params = new URLSearchParams({ api: '1', origin: venue(from).query, destination: venue(to).query });
-    if (route.mode) params.set('travelmode', route.mode);
-    $('#directions-link').href = `https://www.google.com/maps/dir/?${params}`;
-    const start = venue(from).point, end = venue(to).point;
-    const distance = Math.hypot(start[0] - end[0], start[1] - end[1]);
-    $('#map-distance').textContent = from === to ? '同一施設の代表位置を選択中' : `選択した代表点間の直線距離：約${distance < 1000 ? `${Math.round(distance / 10) * 10}m` : `${(distance / 1000).toFixed(1)}km`}（徒歩距離ではありません）`;
     $$('.map-location').forEach(button => {
       const name = button.dataset.venue;
       button.dataset.state = name === to ? 'destination' : name === from ? 'origin' : '';
@@ -410,25 +420,89 @@
       if (caption) { caption.textContent = name === to && name === from ? '出発地・目的地' : name === to ? '目的地' : name === from ? '出発地' : ''; caption.hidden = !caption.textContent; }
     });
     layoutMapLabels();
+
+    $('#swap-route').disabled = !from;
+    ['#route-guide', '.travel-estimate', '#directions-link'].forEach(selector => { $(selector).hidden = !from; });
+    if (!from) {
+      $('#departure-result').innerHTML = `<p>目的地：${escape(venue(to).short)}</p><strong>出発地を選んでください</strong>`;
+      $('#estimate-source').textContent = '';
+      $('#map-distance').textContent = '';
+      return;
+    }
+
+    const selected = state.mapAllocation;
+    const estimate = selected?.from === from && selected.to === to
+      ? { value: duration(selected), origin: selected.assumed ? 'assumed' : selected.hotelDeparture ? 'hotel' : 'itinerary' }
+      : allocation(from, to);
+    const route = routeOverview(from, to);
+    $('#route-guide').innerHTML = `<span class="field-label">道のりの概要</span><h3>${escape(route.title)}</h3>${route.steps.length ? `<ol class="route-steps">${route.steps.map(step => `<li>${escape(step)}</li>`).join('')}</ol>` : ''}<p>${escape(route.note)}</p><a class="text-link" href="${escape(route.source.url)}" target="_blank" rel="noopener noreferrer">${escape(route.source.label)}${icon('external')}</a>`;
+    const entry = Number($('#entry-buffer').value);
+    const arrival = $('#arrival-time').value;
+    $('#travel-number').innerHTML = `${estimate.value}<span>分</span><small>${estimate.origin === 'assumed' ? '5K Run案の仮枠・未実測' : ['draft', 'hotel'].includes(estimate.origin) ? '仮置き・未実測' : estimate.origin === 'same' ? '同一会場内の仮置き' : '添付行程の計画枠'}</small>`;
+    $('#travel-description').textContent = estimate.origin === 'same' ? '同じ施設でも部屋が離れる場合があります。施設内移動として仮に15分を確保。' : '交通の待ち・館内移動を含む予定上の枠です。実測の所要時間ではありません。';
+    $('#estimate-source').textContent = estimate.origin === 'assumed' ? `${selected.detail.split(' · ').slice(1).join(' · ')} 実測の所要時間ではありません。` : estimate.origin === 'itinerary' ? '選択した行程の移動枠を使用しています。経路・交通状況の実測値ではありません。' : estimate.origin === 'source' ? '添付HTMLの移動枠を使用。逆方向も同じ枠で仮置きしています。経路・交通状況の実測値ではありません。' : estimate.origin === 'same' ? '施設内移動は15分の仮置きです。階・部屋・混雑に応じて余裕を追加してください。' : estimate.origin === 'hotel' ? 'ホテル⇔会場の時間はJTBのPDFに記載がありません。近隣45分・MGM60分の仮の計画枠です。空港への専用バスとは別の移動です。' : '元の行程にない区間です。近隣45分・MGMを含む区間60分で仮置きしています。公式案内や実際の経路で調整してください。';
+    const places = `<p class="departure-places">${escape(venue(from).short)} → ${escape(venue(to).short)}</p>`;
+    if (/^\d{2}:\d{2}$/.test(arrival)) {
+      const departure = minutes(arrival) - estimate.value - entry;
+      const planned = estimate.origin === 'itinerary' && departure !== minutes(selected.start)
+        ? ` · 行程では${escape(selected.start)}出発`
+        : '';
+      $('#departure-result').innerHTML = `<p>出発時刻の目安</p><strong>${departure < 0 ? '前日 ' : ''}${formatTime(departure)}<span>PST</span></strong>${places}<small>${escape(arrival)} 開始 − 移動 ${estimate.value}分 − 入場待ち ${entry}分${planned}</small>`;
+    } else {
+      $('#departure-result').innerHTML = `${places}<small>開始・到着予定の時刻を入力してください。</small>`;
+    }
+    const params = new URLSearchParams({ api: '1', origin: venue(from).query, destination: venue(to).query });
+    if (route.mode) params.set('travelmode', route.mode);
+    $('#directions-link').href = `https://www.google.com/maps/dir/?${params}`;
+    const start = venue(from).point, end = venue(to).point;
+    const distance = Math.hypot(start[0] - end[0], start[1] - end[1]);
+    $('#map-distance').textContent = from === to ? '同一施設の代表位置を選択中' : `選択した代表点間の直線距離：約${distance < 1000 ? `${Math.round(distance / 10) * 10}m` : `${(distance / 1000).toFixed(1)}km`}（徒歩距離ではありません）`;
+  }
+
+  function setEntryBuffer(buffer) {
+    const field = $('#entry-buffer');
+    const value = String(buffer);
+    field.querySelector('[data-plan-buffer]')?.remove();
+    if (![...field.options].some(option => option.value === value)) {
+      const option = new Option(`${value}分`, value);
+      option.dataset.planBuffer = '';
+      field.add(option);
+    }
+    field.value = value;
   }
 
   function applyTravel(event, navigate = true) {
     if (!venue(event.from) || !venue(event.to)) return;
-    state.mapAllocation = event.assumed ? event : null;
+    state.mapAllocation = event;
     $('#origin').value = event.from;
     $('#destination').value = event.to;
     const plan = DATA[event.planMode || state.mode];
     const next = event.hotelDeparture ? plan.find(item => item.uid === event.targetUid) : plan.find(item => item.date === event.date && isSession(item) && minutes(item.start) >= minutes(event.end));
     if (event.arrivalTime) {
       $('#arrival-time').value = event.arrivalTime;
-      $('#entry-buffer').value = String(event.entryMinutes ?? 0);
+      setEntryBuffer(event.entryMinutes ?? 0);
     } else if (next) {
       $('#arrival-time').value = next.start;
       const queue = plan.filter(item => item.date === event.date && item.kind === 'queue' && item.end === next.start).at(-1);
       const buffer = event.entryMinutes ?? (queue ? duration(queue) : 20);
-      $('#entry-buffer').value = ['0', '20', '30', '60'].includes(String(buffer)) ? String(buffer) : '20';
+      setEntryBuffer(buffer);
     }
     if (navigate) { updatePlanner(); go('map'); }
+  }
+
+  function applySessionRoute(event) {
+    const events = onDay(state.mode, event.date);
+    const previous = events.filter(item => item.uid !== event.uid && item.end && minutes(item.end) <= minutes(event.start) &&
+      (item.kind === 'travel' || (isSession(item) && !['cut', 'conflict'].includes(item.kind)))).at(-1);
+    const travel = previous?.kind === 'travel' ? previous : null;
+    const incoming = travel?.to === event.venue && venue(travel.from) ? travel : null;
+    const origin = incoming?.from || travel?.to || previous?.venue;
+    const queue = events.filter(item => item.kind === 'queue' && item.end === event.start).at(-1);
+    state.mapAllocation = incoming;
+    $('#origin').value = venue(origin) ? origin : '';
+    $('#destination').value = event.venue;
+    $('#arrival-time').value = event.start;
+    setEntryBuffer(['social', 'registration'].includes(event.kind) ? 0 : incoming?.entryMinutes ?? (queue ? duration(queue) : 20));
   }
 
   function renderDailyRoutes() {
@@ -484,6 +558,7 @@
     $('#topbar-page').textContent = label;
     document.title = `${label} · re:Invent のしおり`;
     $$('.page').forEach(section => { section.hidden = section.id !== `${page}-page`; });
+    revealSelectedDay();
     if (page === 'map') requestAnimationFrame(layoutMapLabels);
     $$('[data-page]').forEach(link => { if (link.dataset.page === page) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
     if (focus) { window.scrollTo({ top: 0, behavior: 'instant' }); $('#main').focus({ preventScroll: true }); }
@@ -501,6 +576,7 @@
       go(target.dataset.go);
     }
     if (target.dataset.day) chooseDay(target.dataset.day);
+    if (target.hasAttribute('data-today')) chooseDay(vegasNow().date);
     if (['plan', 'run'].includes(target.dataset.mode)) {
       state.mode = target.dataset.mode;
       state.mapAllocation = null;
@@ -512,13 +588,11 @@
     if (target.dataset.travel) { const item = findEvent(target.dataset.travel); if (item?.from && item?.to) applyTravel(item); }
     if (target.dataset.venue) { state.mapAllocation = null; $('#destination').value = target.dataset.venue; updatePlanner(); }
     if (target.id === 'dialog-map' && dialogEvent?.venue) {
-      state.mapAllocation = null;
-      $('#destination').value = dialogEvent.venue;
-      if (!dialogEvent.tour) {
-        $('#arrival-time').value = dialogEvent.start;
-        const queue = DATA[state.mode].find(item => item.date === dialogEvent.date && item.kind === 'queue' && item.end === dialogEvent.start);
-        $('#entry-buffer').value = ['social', 'registration'].includes(dialogEvent.kind) ? '0' : String(queue ? duration(queue) : 20);
-      }
+      if (dialogEvent.tour) {
+        state.mapAllocation = null;
+        $('#destination').value = dialogEvent.venue;
+        $('#arrival-time').value = '';
+      } else applySessionRoute(dialogEvent);
       updatePlanner(); $('#event-dialog').close(); go('map');
     }
     if (target.id === 'hotel-map') { state.mapAllocation = null; $('#destination').value = TRIP.hotel.name; updatePlanner(); go('map'); }
@@ -533,7 +607,7 @@
         $('#arrival-time').value = first.start;
         const queue = onDay().filter(item => item.kind === 'queue' && item.end === first.start).at(-1);
         const buffer = queue ? duration(queue) : 20;
-        $('#entry-buffer').value = ['0', '20', '30', '60'].includes(String(buffer)) ? String(buffer) : '20';
+        setEntryBuffer(buffer);
       }
       updatePlanner();
       $('#origin').focus();
@@ -562,8 +636,13 @@
   $$('[data-icon]').forEach(element => { element.innerHTML = icon(element.dataset.icon); });
   setupMap();
   renderVenueResources();
+  updateTodayButtons(today.date);
   renderDays(); renderHome(); renderChecks(); renderSchedule(); renderDailyRoutes();
   $('#storage-note').textContent = storageAvailable ? 'チェックはこのブラウザに保存されます。' : 'この環境では保存できません。チェックは表示中のみ有効です。';
   showPage(location.hash.slice(1) || 'home', false);
-  window.setInterval(() => { if (vegasNow().date === state.day && !$('#event-dialog').open) renderHome(); }, 60000);
+  window.setInterval(() => {
+    const { date } = vegasNow();
+    updateTodayButtons(date);
+    if (date === state.day && !$('#event-dialog').open) renderHome();
+  }, 60000);
 })();

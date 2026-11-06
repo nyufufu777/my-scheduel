@@ -48,15 +48,21 @@
         </div>
 
         <section id="home-page" class="page" aria-label="ホーム">
-          <section class="card trip-overview" aria-labelledby="trip-overview-title"><div class="trip-overview-heading"><div><span class="eyebrow">YOUR TRAVEL PLAN</span><h2 id="trip-overview-title">JTB B1コース <span>東京発・添乗員同行</span></h2></div><button class="text-link" data-day="2026-11-29" data-go="schedule">往復の行程<span data-icon="arrow"></span></button></div><div class="trip-facts"><button class="trip-fact" data-day="2026-11-29" data-go="schedule"><span class="field-label">往路 · 11/29（日）</span><strong>15:25 成田空港集合</strong><small>成田 → シアトル → ラスベガス</small></button><button class="trip-fact" id="hotel-map"><span class="field-label">宿泊 · 5泊</span><strong>Harrah’s Las Vegas</strong><small>11/29〜12/3泊 · MAPで確認</small></button><button class="trip-fact" data-day="2026-12-04" data-go="schedule"><span class="field-label">帰路 · 12/4（金）</span><strong>04:00 ホテル集合</strong><small>12/5（土）16:00 成田着（JST）</small></button></div><div class="hotel-contact" aria-label="ホテルの公式連絡先"></div></section>
-          <div class="plan-switch"><div class="segmented" id="home-plan-mode" aria-label="ホームの行程"><button data-mode="plan" aria-pressed="true">おすすめ</button><button data-mode="run" aria-pressed="false">5K Run案</button></div></div>
-          <div class="day-bar"><h2 id="home-day-title"></h2><button class="quiet-button" data-go="schedule">日程を見る<span data-icon="arrow"></span></button></div>
-          <div id="home-days" class="day-picker home-days" aria-label="ホームの日付"></div>
-          <div id="home-departure" class="card hotel-departure" hidden></div>
           <div class="home-hero">
             <article class="card first-card" id="first-card"></article>
+            <div class="home-controls">
+              <div class="plan-switch"><div class="segmented" id="home-plan-mode" aria-label="ホームの行程"><button data-mode="plan" aria-pressed="true">おすすめ</button><button data-mode="run" aria-pressed="false">5K Run案</button></div></div>
+              <div class="day-bar"><h2 id="home-day-title"></h2><div class="day-actions"><button class="quiet-button" data-go="schedule">日程を見る<span data-icon="arrow"></span></button><button type="button" class="today-button" data-today disabled>今日</button></div></div>
+              <div id="home-days" class="day-picker home-days" aria-label="ホームの日付"></div>
+              <div id="home-departure" class="card hotel-departure" hidden></div>
+            </div>
             <article class="route-card" aria-labelledby="route-card-title"><div class="route-card-top"><span class="eyebrow">LESS RUSH. MORE DISCOVERY.</span><span data-icon="route"></span></div><h2 id="route-card-title">この日のルート</h2><div id="home-route"></div><button class="route-card-link" data-go="map">会場と移動を確認<span data-icon="arrow"></span></button></article>
           </div>
+          <details class="card trip-overview">
+            <summary>JTB B1コースの往復・宿泊</summary>
+            <div class="trip-facts"><button class="trip-fact" data-day="2026-11-29" data-go="schedule"><span class="field-label">往路 · 11/29（日）</span><strong>15:25 成田空港集合</strong><small>成田 → シアトル → ラスベガス</small></button><button class="trip-fact" id="hotel-map"><span class="field-label">宿泊 · 5泊</span><strong>Harrah’s Las Vegas</strong><small>11/29〜12/3泊 · MAPで確認</small></button><button class="trip-fact" data-day="2026-12-04" data-go="schedule"><span class="field-label">帰路 · 12/4（金）</span><strong>04:00 ホテル集合</strong><small>12/5（土）16:00 成田着（JST）</small></button></div>
+            <div class="hotel-contact" aria-label="ホテルの公式連絡先"></div>
+          </details>
           <div class="day-summary" id="day-summary" aria-label="この日の集計"></div>
           <div class="home-bottom">
             <section class="card day-preview"><div class="section-heading"><h2>一日の流れ</h2><button class="text-link" data-go="schedule">すべて見る<span data-icon="chevron"></span></button></div><div id="home-agenda"></div><p class="card-footnote">移動・入場待ちはスケジュールで確認できます。</p></section>
@@ -67,8 +73,9 @@
 
         <section id="schedule-page" class="page" aria-label="スケジュール" hidden>
           <div class="schedule-toolbar"><div class="segmented" id="plan-mode" aria-label="行程の表示方法"><button data-mode="plan" aria-pressed="true">おすすめ</button><button data-mode="run" aria-pressed="false">5K Run案</button></div><label class="search-field"><span data-icon="search"></span><input type="search" id="session-search" placeholder="セッション・会場を検索" aria-label="セッションや会場を検索"></label></div>
+          <div class="day-bar"><div><h2 id="schedule-day-title"></h2><span id="schedule-count" class="small-meta"></span></div><button type="button" class="today-button" data-today disabled>今日</button></div>
           <div id="schedule-days" class="day-picker schedule-days" aria-label="スケジュールの日付"></div>
-          <div class="schedule-meta"><div><h2 id="schedule-day-title"></h2><span id="schedule-count" class="small-meta"></span></div><label class="switch-label"><input type="checkbox" id="show-logistics" checked><span class="switch-track" aria-hidden="true"></span>移動・休憩も表示</label></div>
+          <div class="schedule-meta"><label class="switch-label"><input type="checkbox" id="show-logistics" checked><span class="switch-track" aria-hidden="true"></span>移動・休憩も表示</label></div>
           <div class="plan-description" id="plan-description"></div>
           <div id="timeline" class="timeline"></div>
           <div id="schedule-empty" class="empty-state" hidden><span data-icon="search"></span><h3>一致する予定がありません</h3><p>検索語や日付を変えてみてください。</p><button class="secondary-button" id="clear-search">検索をクリア</button></div>
@@ -77,6 +84,7 @@
 
         <section id="map-page" class="page" aria-label="MAPと移動時間" hidden>
           <div class="plan-switch"><div class="segmented" id="map-plan-mode" aria-label="MAPの行程"><button data-mode="plan" aria-pressed="true">おすすめ</button><button data-mode="run" aria-pressed="false">5K Run案</button></div></div>
+          <div id="departure-result" class="departure-result" aria-live="polite"></div>
           <p class="plan-description" id="map-plan-note" hidden>5Kの送迎は2025年の実績を参考に仮置きしています。2026年の送迎の有無・乗り場・時刻は未確認です。Allegiant Stadiumはこの地図の範囲外で、送迎経路の線は描いていません。</p>
           <div class="map-layout">
             <section class="card map-card" aria-labelledby="venue-map-title">
@@ -92,7 +100,6 @@
               <div id="route-guide" class="route-guide" aria-live="polite"></div>
               <div class="travel-estimate" aria-live="polite"><span class="field-label">確保したい移動枠</span><div id="travel-number"></div><p id="travel-description"></p></div>
               <div class="arrival-fields"><label for="arrival-time"><span class="field-label">開始・到着予定</span><input type="time" id="arrival-time" value="16:30" required></label><label for="entry-buffer"><span class="field-label">到着後の入場待ち</span><select id="entry-buffer"><option value="0">0分</option><option value="20" selected>20分</option><option value="30">30分</option><option value="60">60分</option></select></label></div>
-              <div id="departure-result" class="departure-result" aria-live="polite"></div>
               <a class="primary-button maps-link" id="directions-link" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Mapsで経路を確認<span data-icon="external"></span></a>
               <p class="planner-note" id="estimate-source"></p>
             </section>
