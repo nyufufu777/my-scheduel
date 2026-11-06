@@ -365,6 +365,21 @@ dialog::backdrop { background: #0d162d66; }
 .venue-guide-copy p { color: var(--muted); font-size: .75rem; line-height: 1.8; margin-top: 4px; }
 .venue-guide-links { display: flex; flex-wrap: wrap; gap: 4px 20px; }
 .venue-guide-links .text-link { min-height: 44px; }
+.guide-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 20px; margin-bottom: 14px; }
+.guide-toolbar label { flex: 0 1 260px; min-width: 0; }
+.guide-venue-note, .guide-time-note { font-size: .8125rem; color: var(--muted); }
+.guide-time-note { margin-top: 6px; }
+.guide-stops { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.guide-stop { display: flex; flex-direction: column; padding: 20px 22px 10px; min-width: 0; overflow-wrap: anywhere; }
+.guide-stop-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 12px; color: var(--accent); font-size: .75rem; font-weight: 600; margin-bottom: 8px; }
+.guide-stop-meta .icon { width: 14px; height: 14px; margin-right: 4px; }
+.guide-stop-place { color: var(--muted); margin-top: 4px; font-size: .8125rem; }
+.guide-stop-description { margin-top: 12px; font-size: .875rem; }
+.guide-stop details { margin-top: 12px; border-top: 1px solid var(--line); font-size: .8125rem; }
+.guide-stop summary { min-height: 44px; padding: 10px 0; cursor: pointer; font-weight: 600; }
+.guide-stop details p { margin-bottom: 6px; }
+.guide-stop > .text-link { align-self: flex-start; margin-top: auto; }
+.guide-sources { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 12px; }
 .hotel-contact { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
 .hotel-contact-details { flex: 1 1 230px; min-width: 0; }
 .hotel-contact .field-label { margin-bottom: 0; }
@@ -411,6 +426,7 @@ dialog::backdrop { background: #0d162d66; }
   .route-connector .icon { display: none; }
   .route-card-link { margin-top: 16px; }
   .home-bottom { grid-template-columns: 1fr; }
+  .guide-stops { grid-template-columns: 1fr; }
   .schedule-toolbar { flex-wrap: wrap; gap: 14px; }
   .search-field { width: 100%; }
   .day-picker button { gap: 6px; padding: 10px 5px; }
@@ -426,8 +442,8 @@ dialog::backdrop { background: #0d162d66; }
   :root { font-size: 17px; }
   .sidebar { z-index: 15; inset: auto 0 0; padding: 7px 12px calc(7px + env(safe-area-inset-bottom)); width: 100%; border-right: 0; border-top: 1px solid var(--line); }
   .sidebar > .brand, .nav-caption, .sidebar-bottom { display: none; }
-  .main-nav { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
-  .main-nav a { flex-direction: column; justify-content: center; gap: 4px; min-height: 56px; font-size: .5625rem; padding: 7px 4px; border-radius: 10px; }
+  .main-nav { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
+  .main-nav a { flex-direction: column; justify-content: center; text-align: center; gap: 4px; min-height: 56px; font-size: .5625rem; padding: 7px 4px; border-radius: 10px; }
   .main-nav a .icon { width: 20px; height: 20px; }
   .workspace { margin: 0; padding-bottom: calc(4.5rem + env(safe-area-inset-bottom)); }
   .topbar { height: auto; min-height: 62px; padding: 12px 21px; }

@@ -14,6 +14,7 @@
   <script src="tour.js" defer></script>
   <script src="map-data.js" defer></script>
   <script src="routes-data.js" defer></script>
+  <script src="guide-data.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -29,6 +30,7 @@
         <a href="#home" data-page="home"><span data-icon="home"></span><span>ホーム</span></a>
         <a href="#schedule" data-page="schedule"><span data-icon="calendar"></span><span>スケジュール</span></a>
         <a href="#map" data-page="map"><span data-icon="map"></span><span>MAP・移動時間</span></a>
+        <a href="#guide" data-page="guide"><span data-icon="compass"></span><span>会場ガイド</span></a>
       </nav>
       <div class="sidebar-bottom">
         <div class="sidebar-event"><span class="event-orbit" aria-hidden="true"></span><div><strong>JTB B1 · 7日間の旅</strong><span>11.29 — 12.05 / 2026</span></div></div>
@@ -140,6 +142,20 @@
           <section class="card hotel-transfer-card"><div class="hotel-transfer-title"><span class="venue-icon" data-icon="hotel"></span><div><span class="eyebrow">YOUR HOME BASE</span><h2>Harrah’s Las Vegas</h2><p>11/29〜12/3の5泊 · JTB B1コース</p></div><button class="quiet-button" id="hotel-origin">ホテルから移動<span data-icon="arrow"></span></button></div><div class="hotel-transfers"><p><strong>往路</strong>11/29 16:45ラスベガス着後、専用バスでホテルへ。ホテル到着時刻は未記載。</p><p><strong>帰路</strong>12/4 04:00ホテル集合。専用バスで空港へ向かい、07:00発AS1322便に搭乗。</p></div><div class="hotel-contact" aria-label="ホテルの公式連絡先"></div></section>
           <section class="card route-list-card"><div class="section-heading"><div><p class="eyebrow">ON YOUR ITINERARY</p><h2>行程にある移動</h2><span class="small-meta" id="route-plan-label">おすすめ</span></div><label class="compact-select"><span class="sr-only">移動を表示する日付</span><select id="route-day"></select></label></div><div id="daily-routes"></div></section>
           <div class="info-line"><span data-icon="info"></span><p>Caesars ForumとCaesars Palaceは別の施設です。シャトルの運行・待ち時間・入場ルールは公式案内で確認してください。</p></div>
+        </section>
+
+        <section id="guide-page" class="page" aria-label="会場ガイド" hidden>
+          <div class="guide-toolbar">
+            <label for="guide-venue"><span class="field-label">今いる会場</span><select id="guide-venue"></select></label>
+            <div class="venue-guide-links" id="guide-venue-links"></div>
+          </div>
+          <p class="guide-venue-note" id="guide-venue-note" aria-live="polite"></p>
+          <p class="guide-time-note">立ち寄り時間は目安。移動・待ち時間は別に見込んでください。</p>
+          <div class="guide-stops" id="guide-stops"></div>
+          <div class="guide-sources">
+            <a class="text-link" href="https://aws.amazon.com/events/reinvent/agenda/" target="_blank" rel="noopener noreferrer">AWS公式Agenda<span data-icon="external"></span></a>
+            <a class="text-link" href="https://awsreinvent2026.mapyourshow.com/8_0/index.cfm" target="_blank" rel="noopener noreferrer">Expoの出展者・ブース地図<span data-icon="external"></span></a>
+          </div>
         </section>
 
         <footer class="page-footer"><span>My re:Invent Field Guide <span class="footer-dot">·</span> 2026</span><span>現地時刻：PST / JST <span class="footer-dot">·</span> 個人用・非公式</span></footer>

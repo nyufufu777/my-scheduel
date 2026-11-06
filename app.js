@@ -41,12 +41,14 @@
   const COPY = {
     home: ['YOUR WEEK, AT A GLANCE', '旅のしおり', '2026年11月29日 — 12月5日 · JTB B1コース', 'ホーム'],
     schedule: ['MAKE ROOM FOR THE JOURNEY', 'スケジュール', '出発から帰国まで。JTB B1とセッションをひとつに。', 'スケジュール'],
-    map: ['FIND YOUR WAY', 'MAP・移動時間', '会場の位置関係と、余裕をもった出発時刻。', 'MAP・移動時間']
+    map: ['FIND YOUR WAY', 'MAP・移動時間', '会場の位置関係と、余裕をもった出発時刻。', 'MAP・移動時間'],
+    guide: ['BETWEEN SESSIONS', '会場ガイド', '空き時間で見られる、AI基盤・提供運用・ガバナンスの立ち寄り先。', '会場ガイド']
   };
   const ICONS = {
     home: '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',
     calendar: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M3 11h18M8 15h2m4 0h2m-8 3h2"/>',
     map: '<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3ZM9 3v15M15 6v15"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
     arrow: '<path d="M4 12h16m-6-6 6 6-6 6"/>',
     external: '<path d="M14 3h7v7m0-7L10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/>',
     chevron: '<path d="m9 5 7 7-7 7"/>',
@@ -255,6 +257,30 @@
     $('#venue-guides').innerHTML = Object.entries(VENUE_GUIDES).map(([name, guide]) => `<div class="venue-guide-row"><div class="venue-guide-copy"><h3>${escape(venue(name).short)}</h3><p>${escape(guide.note)}</p></div><div class="venue-guide-links">${venueGuideLinks(name)}</div></div>`).join('');
     const contact = `<div class="hotel-contact-details"><span class="field-label">Harrah’sへの連絡先</span><a class="hotel-phone text-link" href="tel:${HOTEL_CONTACT.phone}" aria-label="Harrah’s Las Vegasの公式掲載番号 ${HOTEL_CONTACT.label}に電話する">${icon('phone')}${escape(HOTEL_CONTACT.label)}</a><p>${escape(HOTEL_CONTACT.note)}</p><address>${escape(HOTEL_CONTACT.address)}</address></div><a class="text-link" href="${escape(HOTEL_CONTACT.sourceURL)}" target="_blank" rel="noopener noreferrer">ホテル公式${icon('external')}</a>`;
     $$('.hotel-contact').forEach(element => { element.innerHTML = contact; });
+  }
+
+  function setupStopGuide() {
+    const picker = $('#guide-venue');
+    const guide = window.GUIDE_STOPS;
+    if (!picker || !guide) return;
+    picker.innerHTML = Object.keys(guide).map(name => `<option value="${escape(name)}">${escape(venue(name).short)}</option>`).join('');
+
+    function renderStops() {
+      const { note, stops } = guide[picker.value];
+      $('#guide-venue-note').textContent = note;
+      $('#guide-venue-links').innerHTML = venueGuideLinks(picker.value);
+      $('#guide-stops').innerHTML = stops.map(stop => `<article class="card guide-stop">
+        <div class="guide-stop-meta"><span>${escape(stop.kind)} · ${escape(stop.topic)}</span><span>${icon('clock')}${escape(stop.minutes)}</span></div>
+        <h2>${escape(stop.title)}</h2>
+        <p class="guide-stop-place">${escape(stop.place)}</p>
+        <p class="guide-stop-description">${escape(stop.description)}</p>
+        <details><summary>見る・聞くポイント</summary><p>${escape(stop.question)}</p></details>
+        <a class="text-link" href="${escape(stop.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escape(stop.title)}の${escape(stop.source)}を開く">${escape(stop.source)}${icon('external')}</a>
+      </article>`).join('');
+    }
+
+    picker.addEventListener('change', renderStops);
+    renderStops();
   }
 
   function renderSchedule() {
@@ -650,6 +676,7 @@
   $$('[data-icon]').forEach(element => { element.innerHTML = icon(element.dataset.icon); });
   setupMap();
   renderVenueResources();
+  setupStopGuide();
   updateTodayButtons(today.date);
   renderDays(); renderHome(); renderChecks(); renderSchedule(); renderDailyRoutes();
   updateStorageNotes();
