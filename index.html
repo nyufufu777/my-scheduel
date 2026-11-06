@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f6f8">
+  <meta name="description" content="AWS re:Invent 2026の個人用しおり。JTB B1の7日間の往復行程、セッション、宿泊先と会場、移動の計画をひとつに。">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <title>ホーム · re:Invent のしおり</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="tour.js" defer></script>
+  <script src="map-data.js" defer></script>
+  <script src="routes-data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#home" aria-label="re:Invent のしおり ホーム">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M7 20V9a3 3 0 0 1 3-3h9M7 20h11a3 3 0 0 0 3-3V6"/><circle cx="7" cy="20" r="3"/><circle cx="21" cy="6" r="3"/></svg></span>
+        <span class="brand-type">re:Invent<span>MY FIELD GUIDE <b>2026</b></span></span>
+      </a>
+      <p class="nav-caption">旅のしおり</p>
+      <nav class="main-nav" aria-label="メインナビゲーション">
+        <a href="#home" data-page="home"><span data-icon="home"></span><span>ホーム</span></a>
+        <a href="#schedule" data-page="schedule"><span data-icon="calendar"></span><span>スケジュール</span></a>
+        <a href="#map" data-page="map"><span data-icon="map"></span><span>MAP・移動時間</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-event"><span class="event-orbit" aria-hidden="true"></span><div><strong>JTB B1 · 7日間の旅</strong><span>11.29 — 12.05 / 2026</span></div></div>
+        <div class="timezone"><span data-icon="globe"></span><span>時刻は各都市の現地時間<br><strong>米国 PST / 日本 JST</strong></span></div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <span class="topbar-label">AWS re:Invent 2026 <span class="topbar-slash">/</span> <span id="topbar-page">ホーム</span></span>
+        <a class="text-link external-link" href="https://reinvent.awsevents.com/" target="_blank" rel="noopener noreferrer">公式サイト<span data-icon="external"></span></a>
+      </header>
+      <main id="main" tabindex="-1">
+        <div class="page-heading">
+          <div><p class="eyebrow" id="page-eyebrow">YOUR WEEK, AT A GLANCE</p><h1 id="page-title">旅のしおり</h1><p class="page-description" id="page-description">2026年11月29日 — 12月5日 · JTB B1コース</p></div>
+          <div class="event-chip"><span class="status-dot" aria-hidden="true"></span>JTB B1 · 7 days</div>
+        </div>
+
+        <section id="home-page" class="page" aria-label="ホーム">
+          <section class="card trip-overview" aria-labelledby="trip-overview-title"><div class="trip-overview-heading"><div><span class="eyebrow">YOUR TRAVEL PLAN</span><h2 id="trip-overview-title">JTB B1コース <span>東京発・添乗員同行</span></h2></div><button class="text-link" data-day="2026-11-29" data-go="schedule">往復の行程<span data-icon="arrow"></span></button></div><div class="trip-facts"><button class="trip-fact" data-day="2026-11-29" data-go="schedule"><span class="field-label">往路 · 11/29（日）</span><strong>15:25 成田空港集合</strong><small>成田 → シアトル → ラスベガス</small></button><button class="trip-fact" id="hotel-map"><span class="field-label">宿泊 · 5泊</span><strong>Harrah’s Las Vegas</strong><small>11/29〜12/3泊 · MAPで確認</small></button><button class="trip-fact" data-day="2026-12-04" data-go="schedule"><span class="field-label">帰路 · 12/4（金）</span><strong>04:00 ホテル集合</strong><small>12/5（土）16:00 成田着（JST）</small></button></div><div class="hotel-contact" aria-label="ホテルの公式連絡先"></div></section>
+          <div class="plan-switch"><div class="segmented" id="home-plan-mode" aria-label="ホームの行程"><button data-mode="plan" aria-pressed="true">おすすめ</button><button data-mode="run" aria-pressed="false">5K Run案</button></div></div>
+          <div class="day-bar"><h2 id="home-day-title"></h2><button class="quiet-button" data-go="schedule">日程を見る<span data-icon="arrow"></span></button></div>
+          <div id="home-days" class="day-picker home-days" aria-label="ホームの日付"></div>
+          <div id="home-departure" class="card hotel-departure" hidden></div>
+          <div class="home-hero">
+            <article class="card first-card" id="first-card"></article>
+            <article class="route-card" aria-labelledby="route-card-title"><div class="route-card-top"><span class="eyebrow">LESS RUSH. MORE DISCOVERY.</span><span data-icon="route"></span></div><h2 id="route-card-title">この日のルート</h2><div id="home-route"></div><button class="route-card-link" data-go="map">会場と移動を確認<span data-icon="arrow"></span></button></article>
+          </div>
+          <div class="day-summary" id="day-summary" aria-label="この日の集計"></div>
+          <div class="home-bottom">
+            <section class="card day-preview"><div class="section-heading"><h2>一日の流れ</h2><button class="text-link" data-go="schedule">すべて見る<span data-icon="chevron"></span></button></div><div id="home-agenda"></div><p class="card-footnote">移動・入場待ちはスケジュールで確認できます。</p></section>
+            <section class="card preparation"><div class="section-heading"><h2>出発前のチェック</h2><span id="check-count" class="small-meta"></span></div><div id="checklist"></div><p class="card-footnote" id="storage-note">チェックはこのブラウザに保存されます。</p></section>
+          </div>
+          <div class="info-line"><span data-icon="info"></span><p>添付の行程をもとにした個人用プランです。セッション・会場・予約状況は、参加前に公式Agendaで再確認してください。</p></div>
+        </section>
+
+        <section id="schedule-page" class="page" aria-label="スケジュール" hidden>
+          <div class="schedule-toolbar"><div class="segmented" id="plan-mode" aria-label="行程の表示方法"><button data-mode="plan" aria-pressed="true">おすすめ</button><button data-mode="run" aria-pressed="false">5K Run案</button></div><label class="search-field"><span data-icon="search"></span><input type="search" id="session-search" placeholder="セッション・会場を検索" aria-label="セッションや会場を検索"></label></div>
+          <div id="schedule-days" class="day-picker schedule-days" aria-label="スケジュールの日付"></div>
+          <div class="schedule-meta"><div><h2 id="schedule-day-title"></h2><span id="schedule-count" class="small-meta"></span></div><label class="switch-label"><input type="checkbox" id="show-logistics" checked><span class="switch-track" aria-hidden="true"></span>移動・休憩も表示</label></div>
+          <div class="plan-description" id="plan-description"></div>
+          <div id="timeline" class="timeline"></div>
+          <div id="schedule-empty" class="empty-state" hidden><span data-icon="search"></span><h3>一致する予定がありません</h3><p>検索語や日付を変えてみてください。</p><button class="secondary-button" id="clear-search">検索をクリア</button></div>
+          <div class="info-line"><span data-icon="clock"></span><p>時刻は各都市の現地時間です。セッションはPST、日本発着はJST。便・集合時刻はJTBの最終しおりで確認してください。</p></div>
+        </section>
+
+        <section id="map-page" class="page" aria-label="MAPと移動時間" hidden>
+          <div class="plan-switch"><div class="segmented" id="map-plan-mode" aria-label="MAPの行程"><button data-mode="plan" aria-pressed="true">おすすめ</button><button data-mode="run" aria-pressed="false">5K Run案</button></div></div>
+          <p class="plan-description" id="map-plan-note" hidden>5Kの送迎は2025年の実績を参考に仮置きしています。2026年の送迎の有無・乗り場・時刻は未確認です。Allegiant Stadiumはこの地図の範囲外で、送迎経路の線は描いていません。</p>
+          <div class="map-layout">
+            <section class="card map-card" aria-labelledby="venue-map-title">
+              <div class="map-heading"><div><p class="eyebrow">THE LAS VEGAS STRIP</p><h2 id="venue-map-title">会場と宿泊先</h2></div><span class="subtle-chip">縮尺を保持</span></div>
+              <div id="venue-map" class="venue-map" aria-label="実際の座標に基づく会場・主要道路・モノレールの地図"></div>
+              <div class="map-route-legend"><span><i class="walk-swatch"></i>徒歩候補</span><span><i class="rail-swatch"></i>モノレール乗車</span><span><i class="unknown-swatch"></i>接続未確認</span></div>
+              <p id="map-route-notice" class="map-route-notice">地図データから求めた移動候補です。現地の通行可否・大会入口・館内経路は未検証です。</p>
+              <p id="map-distance" class="map-distance"></p>
+              <div class="map-caption"><span data-icon="info"></span><span>灰色の点線は施設代表点と検索経路の接続です。実際の通路を表しません。<br><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">地図 © OpenStreetMap contributors</a></span></div>
+            </section>
+            <section class="card planner" aria-labelledby="planner-title"><div class="section-heading"><h2 id="planner-title">移動を計画する</h2><span data-icon="route"></span></div>
+              <div class="route-fields"><label for="origin"><span class="field-label">出発地</span><select id="origin"></select></label><button class="swap-button" id="swap-route" aria-label="出発地と目的地を入れ替える"><span data-icon="swap"></span></button><label for="destination"><span class="field-label">目的地</span><select id="destination"></select></label></div>
+              <div id="route-guide" class="route-guide" aria-live="polite"></div>
+              <div class="travel-estimate" aria-live="polite"><span class="field-label">確保したい移動枠</span><div id="travel-number"></div><p id="travel-description"></p></div>
+              <div class="arrival-fields"><label for="arrival-time"><span class="field-label">開始・到着予定</span><input type="time" id="arrival-time" value="16:30" required></label><label for="entry-buffer"><span class="field-label">到着後の入場待ち</span><select id="entry-buffer"><option value="0">0分</option><option value="20" selected>20分</option><option value="30">30分</option><option value="60">60分</option></select></label></div>
+              <div id="departure-result" class="departure-result" aria-live="polite"></div>
+              <a class="primary-button maps-link" id="directions-link" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Google Mapsで経路を確認<span data-icon="external"></span></a>
+              <p class="planner-note" id="estimate-source"></p>
+            </section>
+          </div>
+          <section class="card venue-guides" aria-labelledby="venue-guides-title"><div class="section-heading"><div><p class="eyebrow">OFFICIAL VENUE GUIDES</p><h2 id="venue-guides-title">会場入口・館内図</h2></div><span class="small-meta">11/5確認</span></div><p class="venue-guide-note">施設の常設図・会議フロア案内です。大会専用入口と当日の通行範囲は、公式Agenda・現地案内で確認してください。</p><div id="venue-guides"></div></section>
+          <details class="card map-sources"><summary>地図・移動案内の根拠 <span>2026/11/5確認</span></summary><div class="map-source-body"><p>道路・建物・線路はOpenStreetMapの座標から作成。メートル単位の同じ縮尺で縦横を描き、500mのスケールを付けています。主要道路を抜粋し、線幅は見やすく調整しています。徒歩の全経路や入口間の所要時間は未検証です。</p><p>Wynn/Encoreの点はWynn側ホテル建物の代表位置、その他は会議施設・宿泊先の代表位置です。地図の距離は代表点間の直線距離で、歩行距離ではありません。</p><ul><li><a href="https://aws.amazon.com/events/reinvent/know-before-you-go/" target="_blank" rel="noopener noreferrer">AWS公式：会場間は30〜45分の余裕を案内。大会シャトルとモノレールの案内</a></li><li><a href="https://www.lvmonorail.com/route-map/" target="_blank" rel="noopener noreferrer">モノレール公式：駅・停車順・通常4〜8分間隔の運行</a></li><li><a href="https://www.venetianlasvegas.com/resort/maps-and-parking.html" target="_blank" rel="noopener noreferrer">Venetian公式：Palazzo〜Wynnの歩道橋、Harrah’sでのモノレールアクセス</a></li><li><a href="https://www.wynnlasvegas.com/meetings/resort-maps" target="_blank" rel="noopener noreferrer">Wynn公式：館内マップ（Event Pavilionを含む）</a></li></ul><p>青線は<a href="https://valhalla.openstreetmap.de/" target="_blank" rel="noopener noreferrer">Valhalla / FOSSGIS（OpenStreetMap）</a>による歩行経路検索結果、紫線は選択した駅間のOSM線路です。各方向を個別に検索しています。現地の通行可否・大会入口・専用通路は未検証で、最短・推奨の会場アクセスを表すとは限りません。灰色の点線は代表点と検索経路のずれをつなぐ線で、実際の通路ではありません。<a href="routes-data.js" download>使用した経路データと取得URL</a></p><p>各施設の座標の出典：</p><div id="map-source-places" class="map-source-places"></div><p><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors / ODbL</a> · <a href="map-data.js" download>使用した地図データ</a></p></div></details>
+          <section class="card hotel-transfer-card"><div class="hotel-transfer-title"><span class="venue-icon" data-icon="hotel"></span><div><span class="eyebrow">YOUR HOME BASE</span><h2>Harrah’s Las Vegas</h2><p>11/29〜12/3の5泊 · JTB B1コース</p></div><button class="quiet-button" id="hotel-origin">ホテルから移動<span data-icon="arrow"></span></button></div><div class="hotel-transfers"><p><strong>往路</strong>11/29 16:45ラスベガス着後、専用バスでホテルへ。ホテル到着時刻は未記載。</p><p><strong>帰路</strong>12/4 04:00ホテル集合。専用バスで空港へ向かい、07:00発AS1322便に搭乗。</p></div><div class="hotel-contact" aria-label="ホテルの公式連絡先"></div></section>
+          <section class="card route-list-card"><div class="section-heading"><div><p class="eyebrow">ON YOUR ITINERARY</p><h2>行程にある移動</h2><span class="small-meta" id="route-plan-label">おすすめ</span></div><label class="compact-select"><span class="sr-only">移動を表示する日付</span><select id="route-day"></select></label></div><div id="daily-routes"></div></section>
+          <div class="info-line"><span data-icon="info"></span><p>Caesars ForumとCaesars Palaceは別の施設です。シャトルの運行・待ち時間・入場ルールは公式案内で確認してください。</p></div>
+        </section>
+
+        <footer class="page-footer"><span>My re:Invent Field Guide <span class="footer-dot">·</span> 2026</span><span>現地時刻：PST / JST <span class="footer-dot">·</span> 個人用・非公式</span></footer>
+      </main>
+    </div>
+  </div>
+  <dialog id="event-dialog" aria-labelledby="dialog-title"><div class="dialog-header"><span class="eyebrow">EVENT DETAILS</span><button class="icon-button" id="close-dialog" aria-label="詳細を閉じる"><span data-icon="close"></span></button></div><div id="dialog-body"></div></dialog>
+  <noscript><div class="noscript-note">予定と移動時間を表示するにはJavaScriptを有効にしてください。</div></noscript>
+</body>
+</html>
