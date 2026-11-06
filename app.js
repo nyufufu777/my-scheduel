@@ -97,20 +97,28 @@
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { storageAvailable = false; }
   const today = vegasNow();
+  const swagInputs = $$('[data-swag-check]');
   const state = {
     page: 'home',
     day: (dateInfo(today.date) || dateInfo(saved.day) || DAYS[0]).date,
     mode: ['plan', 'run'].includes(saved.mode) ? saved.mode : 'plan',
     checks: Array.isArray(saved.checks) ? saved.checks.filter(value => Number.isInteger(value) && value >= 0 && value < CHECKS.length) : [],
+    swagChecks: Array.isArray(saved.swagChecks) ? swagInputs.map(input => input.dataset.swagCheck).filter(id => saved.swagChecks.includes(id)) : [],
     query: '',
     logistics: true,
     mapAllocation: null
   };
 
   function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ day: state.day, mode: state.mode, checks: state.checks })); storageAvailable = true; }
+    const { day, mode, checks, swagChecks } = state;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ day, mode, checks, swagChecks })); storageAvailable = true; }
     catch { storageAvailable = false; }
-    $('#storage-note').textContent = storageAvailable ? 'チェックはこのブラウザに保存されます。' : 'この環境では保存できません。チェックは表示中のみ有効です。';
+    updateStorageNotes();
+  }
+
+  function updateStorageNotes() {
+    const note = storageAvailable ? 'チェックはこのブラウザに保存されます。' : 'この環境では保存できません。チェックは表示中のみ有効です。';
+    $$('[data-storage-note]').forEach(element => { element.textContent = note; });
   }
 
   function status(event) {
@@ -229,9 +237,13 @@
 
   function renderChecks() {
     $('#checklist').innerHTML = CHECKS.map((label, index) => `<label class="check-item"><input type="checkbox" data-check="${index}" ${state.checks.includes(index) ? 'checked' : ''}><span class="check-box" aria-hidden="true">${icon('check')}</span><span class="check-text">${escape(label)}</span></label>`).join('');
-    updateCheckCount();
+    swagInputs.forEach(input => { input.checked = state.swagChecks.includes(input.dataset.swagCheck); });
+    updateCheckCounts();
   }
-  function updateCheckCount() { $('#check-count').textContent = `${new Set(state.checks).size} / ${CHECKS.length}`; }
+  function updateCheckCounts() {
+    $('#check-count').textContent = `${new Set(state.checks).size} / ${CHECKS.length}`;
+    $('#swag-count').textContent = `${state.swagChecks.length} / ${swagInputs.length} 受取済み`;
+  }
 
   function venueGuideLinks(name) {
     const guide = VENUE_GUIDES[name];
@@ -614,11 +626,13 @@
     }
   });
   document.addEventListener('change', event => {
-    if (event.target.matches('[data-check]')) {
-      const index = Number(event.target.dataset.check);
-      state.checks = event.target.checked ? [...new Set([...state.checks, index])] : state.checks.filter(value => value !== index);
-      updateCheckCount(); save();
-    }
+    const input = event.target;
+    if (!input.matches('[data-check], [data-swag-check]')) return;
+    const { check, swagCheck } = input.dataset;
+    const group = swagCheck ? 'swagChecks' : 'checks';
+    const id = swagCheck ?? Number(check);
+    state[group] = input.checked ? [...new Set([...state[group], id])] : state[group].filter(value => value !== id);
+    updateCheckCounts(); save();
   });
   $('#session-search').addEventListener('input', event => { state.query = event.target.value; renderSchedule(); });
   $('#clear-search').addEventListener('click', () => { state.query = ''; $('#session-search').value = ''; renderSchedule(); $('#session-search').focus(); });
@@ -638,7 +652,7 @@
   renderVenueResources();
   updateTodayButtons(today.date);
   renderDays(); renderHome(); renderChecks(); renderSchedule(); renderDailyRoutes();
-  $('#storage-note').textContent = storageAvailable ? 'チェックはこのブラウザに保存されます。' : 'この環境では保存できません。チェックは表示中のみ有効です。';
+  updateStorageNotes();
   showPage(location.hash.slice(1) || 'home', false);
   window.setInterval(() => {
     const { date } = vegasNow();

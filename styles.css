@@ -534,9 +534,15 @@ dialog::backdrop { background: #0d162d66; }
   .dialog-english, .dialog-facts { font-size: .75rem; }
 }
 /* JTB B1: travel dates, flights and hotel information. */
-.trip-overview { margin-top: 20px; padding: 0 24px; }
-.trip-overview[open] { padding-bottom: 15px; }
-.trip-overview summary { cursor: pointer; padding: 16px 0; font-size: .875rem; font-weight: 600; }
+.trip-overview, .swag-checklist { margin-top: 20px; padding: 0 24px; }
+.trip-overview[open], .swag-checklist[open] { padding-bottom: 15px; }
+.trip-overview summary, .swag-checklist summary { cursor: pointer; padding: 16px 0; font-size: .875rem; font-weight: 600; }
+.swag-checklist summary .small-meta { float: right; margin-top: 2px; }
+.swag-intro, .swag-detail { color: var(--muted); font-size: .75rem; line-height: 1.7; }
+.swag-items { list-style: none; margin: 8px 0 0; padding: 0; }
+.swag-items li + li { border-top: 1px solid var(--line); }
+.swag-detail { margin: 0 0 12px 29px; }
+.swag-detail a { color: var(--accent); white-space: nowrap; text-decoration: underline; }
 .trip-facts { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
 .trip-fact { text-align: left; background: transparent; border-radius: 0; border-right: 1px solid var(--line); padding: 4px 20px; min-height: 75px; }
 .trip-fact:first-child { padding-left: 0; }
@@ -575,7 +581,7 @@ dialog::backdrop { background: #0d162d66; }
 }
 @media (max-width: 699px) {
   .day-picker { grid-template-columns: repeat(7,minmax(60px,1fr)); overflow-x: auto; padding: 3px 3px 7px; margin-left: -3px; margin-right: -3px; scrollbar-width: thin; }
-  .trip-overview { padding-inline: 20px; }
+  .trip-overview, .swag-checklist { padding-inline: 20px; }
   .trip-facts { grid-template-columns: 1fr; }
   .trip-fact, .trip-fact:first-child, .trip-fact:last-child { padding: 12px 0; border-right: 0; border-bottom: 1px solid var(--line); }
   .trip-fact:last-child { border-bottom: 0; padding-bottom: 6px; }

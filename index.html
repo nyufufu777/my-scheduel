@@ -63,10 +63,41 @@
             <div class="trip-facts"><button class="trip-fact" data-day="2026-11-29" data-go="schedule"><span class="field-label">往路 · 11/29（日）</span><strong>15:25 成田空港集合</strong><small>成田 → シアトル → ラスベガス</small></button><button class="trip-fact" id="hotel-map"><span class="field-label">宿泊 · 5泊</span><strong>Harrah’s Las Vegas</strong><small>11/29〜12/3泊 · MAPで確認</small></button><button class="trip-fact" data-day="2026-12-04" data-go="schedule"><span class="field-label">帰路 · 12/4（金）</span><strong>04:00 ホテル集合</strong><small>12/5（土）16:00 成田着（JST）</small></button></div>
             <div class="hotel-contact" aria-label="ホテルの公式連絡先"></div>
           </details>
+          <details class="card swag-checklist">
+            <summary>SWAG収集 · 2026 <span id="swag-count" class="small-meta" aria-live="polite"></span></summary>
+            <p class="swag-intro">12/2（水）の昼、VenetianのExpoが回収候補。パーカーの一括受け取りはJTBの最終しおりで確認。</p>
+            <ul class="swag-items">
+              <li>
+                <label class="check-item"><input type="checkbox" data-swag-check="hoodie" aria-describedby="swag-hoodie"><span class="check-box" data-icon="check" aria-hidden="true"></span><span class="check-text">公式パーカー</span></label>
+                <p id="swag-hoodie" class="swag-detail">ツアーで配られなければ、会場で配布窓口・時間を確認。 <a href="https://aws.amazon.com/events/reinvent/experiences/uniquely-reinvent/" target="_blank" rel="noopener noreferrer">AWS公式</a></p>
+              </li>
+              <li>
+                <label class="check-item"><input type="checkbox" data-swag-check="patches" aria-describedby="swag-patches"><span class="check-box" data-icon="check" aria-hidden="true"></span><span class="check-text">Get Patch’dのトート・記念パッチ</span></label>
+                <p id="swag-patches" class="swag-detail">対象の会場企画でパッチを集め、会場内の圧着ステーションでトートに付ける。 <a href="https://aws.amazon.com/events/reinvent/experiences/uniquely-reinvent/" target="_blank" rel="noopener noreferrer">AWS公式</a></p>
+              </li>
+              <li>
+                <label class="check-item"><input type="checkbox" data-swag-check="factory" aria-describedby="swag-factory"><span class="check-box" data-icon="check" aria-hidden="true"></span><span class="check-text">AWS Swag Factoryのカスタムグッズ</span></label>
+                <p id="swag-factory" class="swag-detail">Venetian ExpoのPartner Advantage Zone（New to AWS）。ロボットによる制作実演。受け取り条件は現地で確認。 <a href="https://aws.amazon.com/marketplace/resources/events/reinvent/partner-advantage-zone" target="_blank" rel="noopener noreferrer">AWS公式</a></p>
+              </li>
+              <li>
+                <label class="check-item"><input type="checkbox" data-swag-check="marketplace" aria-describedby="swag-marketplace"><span class="check-box" data-icon="check" aria-hidden="true"></span><span class="check-text">AWS Marketplaceのスタンプ景品</span></label>
+                <p id="swag-marketplace" class="swag-detail">同じPartner Advantage Zoneで各キオスクを回り、ゲームカードにスタンプを集める。 <a href="https://aws.amazon.com/marketplace/resources/events/reinvent/partner-advantage-zone" target="_blank" rel="noopener noreferrer">AWS公式</a></p>
+              </li>
+              <li>
+                <label class="check-item"><input type="checkbox" data-swag-check="certification" aria-describedby="swag-certification"><span class="check-box" data-icon="check" aria-hidden="true"></span><span class="check-text">AWS認定者向けピン・グッズ</span></label>
+                <p id="swag-certification" class="swag-detail">Caesars ForumのCertification Lounge（Academy 407）。月〜木 07:30〜17:00、要有効なAWS認定。 <a href="https://aws.amazon.com/blogs/apn/know-before-you-go-an-aws-partners-guide-to-reinvent-2026/" target="_blank" rel="noopener noreferrer">AWS公式</a></p>
+              </li>
+              <li>
+                <label class="check-item"><input type="checkbox" data-swag-check="dev-quest" aria-describedby="swag-dev-quest"><span class="check-box" data-icon="check" aria-hidden="true"></span><span class="check-text">/dev/questの限定グッズ</span></label>
+                <p id="swag-dev-quest" class="swag-detail">会期中に対象アクティビティをクリア。対象の企画と引き換え方法はAWSの案内で確認。 <a href="https://aws.amazon.com/events/reinvent/experiences/uniquely-reinvent/" target="_blank" rel="noopener noreferrer">AWS公式</a></p>
+              </li>
+            </ul>
+            <p class="card-footnote" data-storage-note>チェックはこのブラウザに保存されます。</p>
+          </details>
           <div class="day-summary" id="day-summary" aria-label="この日の集計"></div>
           <div class="home-bottom">
             <section class="card day-preview"><div class="section-heading"><h2>一日の流れ</h2><button class="text-link" data-go="schedule">すべて見る<span data-icon="chevron"></span></button></div><div id="home-agenda"></div><p class="card-footnote">移動・入場待ちはスケジュールで確認できます。</p></section>
-            <section class="card preparation"><div class="section-heading"><h2>出発前のチェック</h2><span id="check-count" class="small-meta"></span></div><div id="checklist"></div><p class="card-footnote" id="storage-note">チェックはこのブラウザに保存されます。</p></section>
+            <section class="card preparation"><div class="section-heading"><h2>出発前のチェック</h2><span id="check-count" class="small-meta"></span></div><div id="checklist"></div><p class="card-footnote" data-storage-note>チェックはこのブラウザに保存されます。</p></section>
           </div>
           <div class="info-line"><span data-icon="info"></span><p>添付の行程をもとにした個人用プランです。セッション・会場・予約状況は、参加前に公式Agendaで再確認してください。</p></div>
         </section>
