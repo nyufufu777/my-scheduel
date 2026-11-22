@@ -15,6 +15,8 @@
   <script src="map-data.js" defer></script>
   <script src="routes-data.js" defer></script>
   <script src="guide-data.js" defer></script>
+  <script src="airport-data.js" defer></script>
+  <script src="airport.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -29,8 +31,9 @@
       <nav class="main-nav" aria-label="メインナビゲーション">
         <a href="#home" data-page="home"><span data-icon="home"></span><span>ホーム</span></a>
         <a href="#schedule" data-page="schedule"><span data-icon="calendar"></span><span>スケジュール</span></a>
-        <a href="#map" data-page="map"><span data-icon="map"></span><span>MAP・移動時間</span></a>
+        <a href="#map" data-page="map" aria-label="MAP・移動時間"><span data-icon="map"></span><span class="nav-wide">MAP・移動時間</span><span class="nav-compact" aria-hidden="true">MAP・移動</span></a>
         <a href="#guide" data-page="guide"><span data-icon="compass"></span><span>会場ガイド</span></a>
+        <a href="#airport" data-page="airport"><span data-icon="plane"></span><span>空港ガイド</span></a>
       </nav>
       <div class="sidebar-bottom">
         <div class="sidebar-event"><span class="event-orbit" aria-hidden="true"></span><div><strong>JTB B1 · 7日間の旅</strong><span>11.29 — 12.05 / 2026</span></div></div>
@@ -115,6 +118,7 @@
             <summary>当日の動き <span id="day-guide-heading"></span></summary>
             <ol id="day-guide-steps"></ol>
             <p class="day-guide-source" id="day-guide-source"></p>
+            <p class="airport-entry"><a class="text-link" href="#airport">空港の詳しい手順・制約・受け答えを見る</a></p>
             <a class="text-link" href="#documents">しおり・説明会資料の原本を見る<span data-icon="arrow"></span></a>
             <details id="day-meals">
               <summary>食事・Japanサポートデスク</summary>
@@ -169,6 +173,24 @@
             <a class="text-link" href="#documents">JTBのしおり・説明会資料<span data-icon="arrow"></span></a>
             <a class="text-link" href="https://aws.amazon.com/events/reinvent/agenda/" target="_blank" rel="noopener noreferrer">AWS公式Agenda<span data-icon="external"></span></a>
             <a class="text-link" href="https://awsreinvent2026.mapyourshow.com/8_0/index.cfm" target="_blank" rel="noopener noreferrer">Expoの出展者・ブース地図<span data-icon="external"></span></a>
+          </div>
+        </section>
+
+        <section id="airport-page" class="page" aria-label="空港ガイド" hidden>
+          <div class="airport-toolbar">
+            <p>JTB B1コース · 2026/11/22確認<br>日本はJST、シアトル・ラスベガスはPST（日本より17時間遅れ）。</p>
+            <button type="button" class="secondary-button" id="airport-print">全項目を印刷・PDF保存</button>
+          </div>
+          <div class="airport-tabs" role="tablist" aria-label="空港ガイドの内容">
+            <button type="button" role="tab" id="airport-tab-outbound" aria-controls="airport-outbound" aria-selected="true" tabindex="0" data-airport-tab="outbound">行き <span>11/29</span></button>
+            <button type="button" role="tab" id="airport-tab-return" aria-controls="airport-return" aria-selected="false" tabindex="-1" data-airport-tab="return">帰り <span>12/4–5</span></button>
+            <button type="button" role="tab" id="airport-tab-rules" aria-controls="airport-rules" aria-selected="false" tabindex="-1" data-airport-tab="rules">制約 <span>持ち物</span></button>
+            <button type="button" role="tab" id="airport-tab-phrases" aria-controls="airport-phrases" aria-selected="false" tabindex="-1" data-airport-tab="phrases">受け答え</button>
+          </div>
+          <div id="airport-content"></div>
+          <div class="airport-source-note">
+            <p>行程はB1最終しおり、制約は各項目の出典を参照。便・搭乗口・締切・手荷物の最終条件は、最新のeチケットと航空会社・係員の案内で確認してください。表示時刻はリアルタイム更新ではありません。</p>
+            <a class="text-link" href="#documents">しおり・説明会資料の原本を見る</a>
           </div>
         </section>
 

@@ -43,7 +43,8 @@
     schedule: ['MAKE ROOM FOR THE JOURNEY', 'スケジュール', '出発から帰国まで。JTB B1とセッションをひとつに。', 'スケジュール'],
     map: ['FIND YOUR WAY', 'MAP・移動時間', '会場の位置関係と、余裕をもった出発時刻。', 'MAP・移動時間'],
     guide: ['BETWEEN SESSIONS', '会場ガイド', '空き時間で見られる、AI基盤・提供運用・ガバナンスの立ち寄り先。', '会場ガイド'],
-    documents: ['', '資料PDF', '2026年のB1コース最終しおりとJapan Tour事前説明会資料。', '資料PDF']
+    documents: ['', '資料PDF', '2026年のB1コース最終しおりとJapan Tour事前説明会資料。', '資料PDF'],
+    airport: ['', '空港ガイド', '成田・シアトル・ラスベガス。往復の手順と、その場で見るメモ。', '空港ガイド']
   };
   const ICONS = {
     home: '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',
@@ -605,6 +606,7 @@
   function showPage(page, focus = true) {
     if (!COPY[page]) page = 'home';
     state.page = page;
+    document.body.dataset.page = page;
     const [eyebrow, title, description, label] = COPY[page];
     $('#page-eyebrow').textContent = eyebrow;
     $('#page-eyebrow').hidden = !eyebrow;
