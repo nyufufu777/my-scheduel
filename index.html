@@ -62,16 +62,17 @@
           </div>
           <details class="card trip-overview">
             <summary>JTB B1コースの往復・宿泊</summary>
-            <div class="trip-facts"><button class="trip-fact" data-day="2026-11-29" data-go="schedule"><span class="field-label">往路 · 11/29（日）</span><strong>15:25 成田空港集合</strong><small>成田 → シアトル → ラスベガス</small></button><button class="trip-fact" id="hotel-map"><span class="field-label">宿泊 · 5泊</span><strong>Harrah’s Las Vegas</strong><small>11/29〜12/3泊 · MAPで確認</small></button><button class="trip-fact" data-day="2026-12-04" data-go="schedule"><span class="field-label">帰路 · 12/4（金）</span><strong>04:00 ホテル集合</strong><small>12/5（土）16:00 成田着（JST）</small></button></div>
+            <div class="trip-facts"><button class="trip-fact" data-day="2026-11-29" data-go="schedule"><span class="field-label">往路 · 11/29（日）</span><strong>14:25 成田第2ターミナル集合</strong><small>3階 JTB団体受付1〜10番 · 当日の動き</small></button><button class="trip-fact" id="hotel-map"><span class="field-label">宿泊 · 5泊</span><strong>Harrah’s Las Vegas</strong><small>11/29〜12/3泊 · MAPで確認</small></button><button class="trip-fact" data-day="2026-12-04" data-go="schedule"><span class="field-label">帰路 · 12/4（金）</span><strong>04:00 ホテルフロント横集合</strong><small>チェックアウト後に集合 · 12/5 15:25 JST 成田着</small></button></div>
             <div class="hotel-contact" aria-label="ホテルの公式連絡先"></div>
+            <p class="card-footnote">11/22受領のB1最終しおりを反映。便・集合場所はeチケットと当日のJTB案内でも確認。</p>
           </details>
           <details class="card swag-checklist">
             <summary>SWAG収集 · 2026 <span id="swag-count" class="small-meta" aria-live="polite"></span></summary>
-            <p class="swag-intro">12/2（水）の昼、VenetianのExpoが回収候補。パーカーの一括受け取りはJTBの最終しおりで確認。</p>
+            <p class="swag-intro">12/2（水）の昼、VenetianのExpoが回収候補。JTBのツアーギフト2点は出発空港の受付で受取。</p>
             <ul class="swag-items">
               <li>
                 <label class="check-item"><input type="checkbox" data-swag-check="hoodie" aria-describedby="swag-hoodie"><span class="check-box" data-icon="check" aria-hidden="true"></span><span class="check-text">公式パーカー</span></label>
-                <p id="swag-hoodie" class="swag-detail">ツアーで配られなければ、会場で配布窓口・時間を確認。 <a href="https://aws.amazon.com/events/reinvent/experiences/uniquely-reinvent/" target="_blank" rel="noopener noreferrer">AWS公式</a></p>
+                <p id="swag-hoodie" class="swag-detail">説明会資料ではVenetian Hall CのSwag Deskを案内。配布時間はAWS Eventsで確認。 <a href="https://aws.amazon.com/events/reinvent/experiences/uniquely-reinvent/" target="_blank" rel="noopener noreferrer">AWS公式</a></p>
               </li>
               <li>
                 <label class="check-item"><input type="checkbox" data-swag-check="patches" aria-describedby="swag-patches"><span class="check-box" data-icon="check" aria-hidden="true"></span><span class="check-text">Get Patch’dのトート・記念パッチ</span></label>
@@ -110,6 +111,17 @@
           <div id="schedule-days" class="day-picker schedule-days" aria-label="スケジュールの日付"></div>
           <div class="schedule-meta"><label class="switch-label"><input type="checkbox" id="show-logistics" checked><span class="switch-track" aria-hidden="true"></span>移動・休憩も表示</label></div>
           <div class="plan-description" id="plan-description"></div>
+          <details class="card day-guide" id="day-guide" open>
+            <summary>当日の動き <span id="day-guide-heading"></span></summary>
+            <ol id="day-guide-steps"></ol>
+            <p class="day-guide-source" id="day-guide-source"></p>
+            <details id="day-meals">
+              <summary>食事・Japanサポートデスク</summary>
+              <p>11/30〜12/3は朝食07:00〜09:00、昼食11:00〜13:00。事前説明会資料の案内です。</p>
+              <dl id="day-meal-places"></dl>
+              <p>JapanサポートデスクはVenetian Level 1 Casanova 607。11/30〜12/3は09:00〜17:00。相談・ツアープレゼント受取・Expoツアー受付の案内があります。</p>
+            </details>
+          </details>
           <div id="timeline" class="timeline"></div>
           <div id="schedule-empty" class="empty-state" hidden><span data-icon="search"></span><h3>一致する予定がありません</h3><p>検索語や日付を変えてみてください。</p><button class="secondary-button" id="clear-search">検索をクリア</button></div>
           <div class="info-line"><span data-icon="clock"></span><p>時刻は各都市の現地時間です。セッションはPST、日本発着はJST。便・集合時刻はJTBの最終しおりで確認してください。</p></div>
@@ -139,7 +151,7 @@
           </div>
           <section class="card venue-guides" aria-labelledby="venue-guides-title"><div class="section-heading"><div><p class="eyebrow">OFFICIAL VENUE GUIDES</p><h2 id="venue-guides-title">会場入口・館内図</h2></div><span class="small-meta">11/5確認</span></div><p class="venue-guide-note">施設の常設図・会議フロア案内です。大会専用入口と当日の通行範囲は、公式Agenda・現地案内で確認してください。</p><div id="venue-guides"></div></section>
           <details class="card map-sources"><summary>地図・移動案内の根拠 <span>2026/11/5確認</span></summary><div class="map-source-body"><p>道路・建物・線路はOpenStreetMapの座標から作成。メートル単位の同じ縮尺で縦横を描き、500mのスケールを付けています。主要道路を抜粋し、線幅は見やすく調整しています。徒歩の全経路や入口間の所要時間は未検証です。</p><p>Wynn/Encoreの点はWynn側ホテル建物の代表位置、その他は会議施設・宿泊先の代表位置です。地図の距離は代表点間の直線距離で、歩行距離ではありません。</p><ul><li><a href="https://aws.amazon.com/events/reinvent/know-before-you-go/" target="_blank" rel="noopener noreferrer">AWS公式：会場間は30〜45分の余裕を案内。大会シャトルとモノレールの案内</a></li><li><a href="https://www.lvmonorail.com/route-map/" target="_blank" rel="noopener noreferrer">モノレール公式：駅・停車順・通常4〜8分間隔の運行</a></li><li><a href="https://www.venetianlasvegas.com/resort/maps-and-parking.html" target="_blank" rel="noopener noreferrer">Venetian公式：Palazzo〜Wynnの歩道橋、Harrah’sでのモノレールアクセス</a></li><li><a href="https://www.wynnlasvegas.com/meetings/resort-maps" target="_blank" rel="noopener noreferrer">Wynn公式：館内マップ（Event Pavilionを含む）</a></li></ul><p>青線は<a href="https://valhalla.openstreetmap.de/" target="_blank" rel="noopener noreferrer">Valhalla / FOSSGIS（OpenStreetMap）</a>による歩行経路検索結果、紫線は選択した駅間のOSM線路です。各方向を個別に検索しています。現地の通行可否・大会入口・専用通路は未検証で、最短・推奨の会場アクセスを表すとは限りません。灰色の点線は代表点と検索経路のずれをつなぐ線で、実際の通路ではありません。<a href="routes-data.js" download>使用した経路データと取得URL</a></p><p>各施設の座標の出典：</p><div id="map-source-places" class="map-source-places"></div><p><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors / ODbL</a> · <a href="map-data.js" download>使用した地図データ</a></p></div></details>
-          <section class="card hotel-transfer-card"><div class="hotel-transfer-title"><span class="venue-icon" data-icon="hotel"></span><div><span class="eyebrow">YOUR HOME BASE</span><h2>Harrah’s Las Vegas</h2><p>11/29〜12/3の5泊 · JTB B1コース</p></div><button class="quiet-button" id="hotel-origin">ホテルから移動<span data-icon="arrow"></span></button></div><div class="hotel-transfers"><p><strong>往路</strong>11/29 16:45ラスベガス着後、専用バスでホテルへ。ホテル到着時刻は未記載。</p><p><strong>帰路</strong>12/4 04:00ホテル集合。専用バスで空港へ向かい、07:00発AS1322便に搭乗。</p></div><div class="hotel-contact" aria-label="ホテルの公式連絡先"></div></section>
+          <section class="card hotel-transfer-card"><div class="hotel-transfer-title"><span class="venue-icon" data-icon="hotel"></span><div><span class="eyebrow">YOUR HOME BASE</span><h2>Harrah’s Las Vegas</h2><p>11/29〜12/3の5泊 · JTB B1コース</p></div><button class="quiet-button" id="hotel-origin">ホテルから移動<span data-icon="arrow"></span></button></div><div class="hotel-transfers"><p><strong>往路</strong>11/29 15:28ラスベガス着後、専用バスでホテルへ。パスポートとカードで個人チェックイン（16:00〜）後、各自バッジ受取。</p><p><strong>帰路</strong>12/4 チェックアウトを済ませ、04:00に1階フロント横へ集合。07:00発AS701便。荷物タグのNRTを確認。</p></div><div class="hotel-contact" aria-label="ホテルの公式連絡先"></div></section>
           <section class="card route-list-card"><div class="section-heading"><div><p class="eyebrow">ON YOUR ITINERARY</p><h2>行程にある移動</h2><span class="small-meta" id="route-plan-label">おすすめ</span></div><label class="compact-select"><span class="sr-only">移動を表示する日付</span><select id="route-day"></select></label></div><div id="daily-routes"></div></section>
           <div class="info-line"><span data-icon="info"></span><p>Caesars ForumとCaesars Palaceは別の施設です。シャトルの運行・待ち時間・入場ルールは公式案内で確認してください。</p></div>
         </section>

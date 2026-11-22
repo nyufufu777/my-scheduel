@@ -90,15 +90,22 @@
   const dayLabel = date => { const day = dateInfo(date); return `${day.short}（${day.ja}）`; };
   const roomLabel = event => event.room ? event.room.split(' | ')[0] : '詳細な場所は公式案内を確認';
 
-  function vegasNow() {
-    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).map(part => [part.type, part.value]));
+  function vegasNow(timeZone = 'America/Los_Angeles') {
+    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).map(part => [part.type, part.value]));
     return { date: `${parts.year}-${parts.month}-${parts.day}`, minute: Number(parts.hour) * 60 + Number(parts.minute) };
+  }
+
+  function tripToday() {
+    const outbound = TRIP.events.find(event => event.kind === 'flight');
+    const homeArrival = TRIP.events.find(event => event.kind === 'arrival');
+    const inJapan = Date.now() < Date.parse(outbound.startISO) || Date.now() >= Date.parse(homeArrival.startISO);
+    return vegasNow(inJapan ? 'Asia/Tokyo' : 'America/Los_Angeles');
   }
 
   let storageAvailable = true;
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { storageAvailable = false; }
-  const today = vegasNow();
+  const today = tripToday();
   const swagInputs = $$('[data-swag-check]');
   const state = {
     page: 'home',
@@ -145,7 +152,7 @@
     const day = dateInfo(date);
     $$('[data-today]').forEach(button => {
       button.disabled = !day;
-      button.title = day ? `ラスベガスの今日（${day.short}）へ` : 'ラスベガスの今日は旅程外です';
+      button.title = day ? `今日（${day.short}）へ。出国前・日本到着後はJST、滞在中はPST` : '今日は旅程外です';
     });
   }
 
@@ -180,7 +187,7 @@
     const first = current.date === state.day ? sessions.find(event => minutes(event.end) > current.minute) : sessions[0];
     $('#home-day-title').textContent = dateInfo(state.day).long;
     $('#route-card-title').textContent = 'この日のルート';
-    if (!sessions.length && events.some(event => event.tour)) { renderJourneyHome(events.filter(event => event.tour), current.date === state.day); return; }
+    if (!sessions.length && events.some(event => event.tour)) { renderJourneyHome(events.filter(event => event.tour), tripToday().date === state.day); return; }
     if (first) {
       const started = current.date === state.day && minutes(first.start) <= current.minute;
       const upcoming = current.date === state.day && !started;
@@ -193,7 +200,7 @@
     }
     const stops = travels.length ? [travels[0].from, ...travels.map(event => event.to)] : [...new Set(sessions.map(event => event.venue).filter(Boolean))];
     $('#home-route').innerHTML = stops.map((name, index) => `${index ? `<div class="route-connector">${icon('clock')}${duration(travels[index - 1])}分の移動枠</div>` : ''}<div class="route-stop"><span class="route-stop-dot" aria-hidden="true"></span><span>${escape(venue(name)?.short || name)}</span></div>`).join('') + (travels.length ? '' : '<p class="route-single">会場間の移動はないプラン。<br>同じ施設内でも、部屋まで余裕をもって。</p>');
-    if (sessions.some(event => event.kind === 'social' && !event.venue)) $('#home-route').innerHTML += '<p class="route-single">夜のイベント会場・移動は未確認です。</p>';
+    if (sessions.some(event => event.title === 're:Play party')) $('#home-route').innerHTML += '<p class="route-single">re:PlayはAllegiant Stadium。シャトル乗り場・時刻はAWS Eventsで確認。</p>';
     if (sessions.some(event => event.kind === 'run')) $('#home-route').innerHTML += '<p class="route-single">5K送迎の有無・乗り場・時刻は未確認。往復は仮の計画枠です。</p>';
     $('#day-summary').innerHTML = `<div class="summary-item"><strong>${sessions.length}</strong><span>${sessions.some(event => ['run', 'registration'].includes(event.kind)) ? '参加・受付の予定' : sessions.some(event => event.kind === 'social') ? 'セッション・交流' : 'セッション'}</span></div><div class="summary-item"><strong>${new Set(sessions.map(event => event.venue).filter(Boolean)).size}</strong><span>訪れる会場</span></div><div class="summary-item"><strong>${travels.reduce((sum, event) => sum + duration(event), 0)}<small>分</small></strong><span>確保する移動枠</span></div>`;
     $('#home-agenda').innerHTML = sessions.map(event => `<button class="preview-row" data-event="${event.uid}"><span class="preview-time">${escape(event.start)}</span><span><span class="preview-label">${escape(event.label)}</span><span class="preview-venue">${escape(event.venue || '会場は未確認')} · ${escape(status(event)[1])}</span></span>${icon('chevron')}</button>`).join('');
@@ -212,23 +219,25 @@
     } else {
       renderFinishedHome();
     }
+    const flights = events.filter(event => event.kind === 'flight');
+    const arrival = TRIP.events.find(event => event.kind === 'arrival');
     let stops, connections;
     if (state.day === TRIP.start) {
       $('#route-card-title').textContent = 'ラスベガスへ';
       stops = ['成田 NRT', 'シアトル SEA', 'ラスベガス LAS', TRIP.hotel.name];
-      connections = ['AS124 · 18:25 JST発', 'AS1325 · 14:00 PST発', '到着後、専用バス'];
+      connections = [...flights.map(event => `${event.flight} · ${event.start} ${event.startZone}発`), '到着後、専用バス'];
     } else if (state.day === '2026-12-04') {
       $('#route-card-title').textContent = '日本への帰路';
       stops = [TRIP.hotel.name, 'ラスベガス LAS', 'シアトル SEA', '成田 NRT'];
-      connections = ['04:00 PST集合 · 専用バス', 'AS1322 · 07:00 PST発', 'AS123 · 12/5 16:00 JST着'];
+      connections = ['04:00 PST集合 · 専用バス', `${flights[0].flight} · ${flights[0].start} PST発`, `${flights[1].flight} · 12/5 ${arrival.start} JST着`];
     } else {
       $('#route-card-title').textContent = '旅の終わり';
       stops = ['成田 NRT']; connections = [];
     }
-    $('#home-route').innerHTML = stops.map((name, index) => `${index ? `<div class="route-connector">${icon('plane')}${escape(connections[index - 1])}</div>` : ''}<div class="route-stop"><span class="route-stop-dot" aria-hidden="true"></span><span>${escape(name)}</span></div>`).join('') + (stops.length === 1 ? '<p class="route-single">16:00 JST到着予定。<br>入国審査・通関後に解散です。</p>' : '');
+    $('#home-route').innerHTML = stops.map((name, index) => `${index ? `<div class="route-connector">${icon('plane')}${escape(connections[index - 1])}</div>` : ''}<div class="route-stop"><span class="route-stop-dot" aria-hidden="true"></span><span>${escape(name)}</span></div>`).join('') + (stops.length === 1 ? `<p class="route-single">${escape(arrival.start)} JST到着予定。<br>入国審査・通関後に解散です。</p>` : '');
     const returning = state.day === '2026-12-04';
     const arrived = state.day === TRIP.end;
-    $('#day-summary').innerHTML = `<div class="summary-item"><strong>${arrived ? '16:00' : '2'}${arrived ? '' : '<small>便</small>'}</strong><span>${arrived ? '成田着（JST）' : 'この日のフライト'}</span></div><div class="summary-item"><strong>${arrived ? '7' : '1'}<small>${arrived ? '日間' : '回'}</small></strong><span>${arrived ? 'ツアー全体' : 'シアトル乗継'}</span></div><div class="summary-item"><strong>${returning ? '12/5' : '5'}${returning ? '' : '<small>泊</small>'}</strong><span>${returning ? '日本帰着日' : 'ホテル（全旅程）'}</span></div>`;
+    $('#day-summary').innerHTML = `<div class="summary-item"><strong>${arrived ? escape(arrival.start) : flights.length}${arrived ? '' : '<small>便</small>'}</strong><span>${arrived ? '成田着（JST）' : 'この日のフライト'}</span></div><div class="summary-item"><strong>${arrived ? '7' : '1'}<small>${arrived ? '日間' : '回'}</small></strong><span>${arrived ? 'ツアー全体' : 'シアトル乗継'}</span></div><div class="summary-item"><strong>${returning ? '12/5' : '5'}${returning ? '' : '<small>泊</small>'}</strong><span>${returning ? '日本帰着日' : 'ホテル（全旅程）'}</span></div>`;
     $('#home-agenda').innerHTML = events.map(event => `<button class="preview-row" data-event="${event.uid}"><span class="preview-time">${escape(event.start)}<small>${escape(event.startZone)}${event.timeSuffix ? ' 着後' : ''}</small></span><span><span class="preview-label">${escape(event.label)}</span><span class="preview-venue">${escape(event.flight || event.place)}</span></span>${icon('chevron')}</button>`).join('');
   }
 
@@ -284,6 +293,11 @@
   }
 
   function renderSchedule() {
+    const guide = TRIP.dayGuides[state.day];
+    $('#day-guide-heading').textContent = guide.heading;
+    $('#day-guide-steps').innerHTML = guide.steps.map(step => `<li>${escape(step)}</li>`).join('');
+    $('#day-guide-source').textContent = guide.source;
+    $('#day-meals').hidden = state.day < TRIP.conferenceStart || state.day > TRIP.conferenceEnd;
     $$('[data-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === state.mode)));
     const allEvents = onDay();
     const query = state.query.trim().toLocaleLowerCase();
@@ -293,6 +307,7 @@
     const socials = sessions.filter(event => event.kind === 'social');
     const activities = sessions.filter(event => ['run', 'registration'].includes(event.kind));
     const journeys = allEvents.filter(event => event.tour);
+    $('#plan-description').hidden = journeys.length > 0;
     $('#schedule-count').textContent = `${sessions.length - socials.length - activities.length}セッション${activities.length ? ` · 参加・受付 ${activities.length}件` : ''}${socials.length ? ` · 交流 ${socials.length}件` : ''}${journeys.length ? ` · JTB ${journeys.length}件` : ''}${query ? ` · 検索 ${events.length}件` : ''}`;
     $('#plan-description').textContent = {
       plan: 'JTB B1の往復と、移動・入場待ちに余裕を取ったセッション行程。',
@@ -575,10 +590,10 @@
       return;
     }
     const note = event.detail.split(' · ').filter(part => part !== event.id && part !== event.english && part !== event.location).join(' · ');
-    const sourceNote = event.source === 'user' ? 'ご指定の参加予定です。主催者の最新案内で確認してください。' : event.source === 'official' ? '公式カタログの掲載情報と個人の仮予定を区別して記載しています。最新案内で再確認してください。' : '添付行程の情報です。最新の時刻・部屋・予約状況は公式Agendaで確認してください。';
+    const sourceNote = event.source === 'jtb' ? '提供されたJTB B1しおり・事前説明会資料を反映しています。変更時はTrip Loopと当日の案内で確認してください。' : event.source === 'user' ? 'ご指定の参加予定です。主催者の最新案内で確認してください。' : event.source === 'official' ? '公式カタログの掲載情報と個人の仮予定を区別して記載しています。最新案内で再確認してください。' : '添付行程の情報です。最新の時刻・部屋・予約状況は公式Agendaで確認してください。';
     const mapAction = venue(event.venue) ? `<button class="primary-button" id="dialog-map">会場をMAPで見る${icon('map')}</button>` : event.venue ? `<a class="primary-button" href="https://www.google.com/maps/search/?${new URLSearchParams({ api: '1', query: event.location || event.venue })}" target="_blank" rel="noopener noreferrer">Google Mapsで場所を確認${icon('external')}</a>` : '';
     const venueResources = VENUE_GUIDES[event.venue] ? `<div class="dialog-venue-guide"><span class="field-label">会場入口・館内図</span><div class="venue-guide-links">${venueGuideLinks(event.venue)}</div><p class="dialog-note">施設の常設図です。re:Invent専用入口・当日の通行範囲は公式Agendaと現地案内で確認してください。</p></div>` : '';
-    $('#dialog-body').innerHTML = `${badge(event)}<h2 id="dialog-title" class="dialog-title">${escape(event.label)}</h2>${event.english ? `<p class="dialog-english">${escape(event.english)}</p>` : ''}<dl class="dialog-facts"><dt>${['social', 'run', 'registration'].includes(event.kind) ? '参加予定' : '日時'}</dt><dd>${dayLabel(event.date)} ${escape(event.start)}–${escape(event.end)} PST${event.kind === 'run' ? '（仮）' : ''}</dd>${event.officialStart ? `<dt>公式掲載枠</dt><dd>${escape(event.officialStart)}–${escape(event.officialEnd)} PST（実際のスタート時刻は未確認）</dd>` : ''}${event.doors ? `<dt>開場</dt><dd>${escape(event.doors)} PST（予定）</dd>` : ''}${event.programStart ? `<dt>開始</dt><dd>${escape(event.programStart)} PST</dd>` : ''}<dt>会場</dt><dd>${escape(event.venue || '未確認')}</dd>${event.location ? `<dt>場所</dt><dd>${escape(event.location)}</dd>` : ''}${event.fee ? `<dt>参加費</dt><dd>${escape(event.fee)}</dd>` : ''}${event.id ? `<dt>ID</dt><dd>${escape(event.id)}</dd>` : ''}</dl>${event.blocked ? `<p class="blocked-reason">${escape(TRIP.notice)}</p>` : ''}<p class="dialog-note">${escape(note)}<br>${escape(sourceNote)}</p>${event.sourceURL ? `<p><a class="text-link" href="${escape(event.sourceURL)}" target="_blank" rel="noopener noreferrer">公式カタログ${icon('external')}</a></p>` : ''}${venueResources}${mapAction ? `<div class="dialog-actions">${mapAction}</div>` : ''}`;
+    $('#dialog-body').innerHTML = `${badge(event)}<h2 id="dialog-title" class="dialog-title">${escape(event.label)}</h2>${event.english ? `<p class="dialog-english">${escape(event.english)}</p>` : ''}<dl class="dialog-facts"><dt>${['social', 'run', 'registration'].includes(event.kind) ? '参加予定' : '日時'}</dt><dd>${dayLabel(event.date)} ${escape(event.start)}–${escape(event.end)} PST${event.kind === 'run' ? '（仮）' : ''}</dd>${event.officialStart ? `<dt>公式掲載枠</dt><dd>${escape(event.officialStart)}–${escape(event.officialEnd)} PST${event.kind === 'run' ? '（実際のスタート時刻は未確認）' : ''}</dd>` : ''}${event.doors ? `<dt>開場</dt><dd>${escape(event.doors)} PST（予定）</dd>` : ''}${event.programStart ? `<dt>開始</dt><dd>${escape(event.programStart)} PST</dd>` : ''}<dt>会場</dt><dd>${escape(event.venue || '未確認')}</dd>${event.location ? `<dt>場所</dt><dd>${escape(event.location)}</dd>` : ''}${event.fee ? `<dt>参加費</dt><dd>${escape(event.fee)}</dd>` : ''}${event.id ? `<dt>ID</dt><dd>${escape(event.id)}</dd>` : ''}</dl>${event.blocked ? `<p class="blocked-reason">${escape(TRIP.notice)}</p>` : ''}<p class="dialog-note">${escape(note)}<br>${escape(sourceNote)}</p>${event.sourceURL ? `<p><a class="text-link" href="${escape(event.sourceURL)}" target="_blank" rel="noopener noreferrer">公式カタログ${icon('external')}</a></p>` : ''}${venueResources}${mapAction ? `<div class="dialog-actions">${mapAction}</div>` : ''}`;
     $('#event-dialog').showModal();
   }
 
@@ -614,7 +629,7 @@
       go(target.dataset.go);
     }
     if (target.dataset.day) chooseDay(target.dataset.day);
-    if (target.hasAttribute('data-today')) chooseDay(vegasNow().date);
+    if (target.hasAttribute('data-today')) chooseDay(tripToday().date);
     if (['plan', 'run'].includes(target.dataset.mode)) {
       state.mode = target.dataset.mode;
       state.mapAllocation = null;
@@ -676,13 +691,14 @@
   $$('[data-icon]').forEach(element => { element.innerHTML = icon(element.dataset.icon); });
   setupMap();
   renderVenueResources();
+  $('#day-meal-places').innerHTML = TRIP.meals.map(([name, location]) => `<dt>${escape(venue(name).short)}</dt><dd>${escape(location)}</dd>`).join('');
   setupStopGuide();
   updateTodayButtons(today.date);
   renderDays(); renderHome(); renderChecks(); renderSchedule(); renderDailyRoutes();
   updateStorageNotes();
   showPage(location.hash.slice(1) || 'home', false);
   window.setInterval(() => {
-    const { date } = vegasNow();
+    const { date } = tripToday();
     updateTodayButtons(date);
     if (date === state.day && !$('#event-dialog').open) renderHome();
   }, 60000);
