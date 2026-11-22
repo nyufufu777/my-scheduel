@@ -9,7 +9,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
   <title>ホーム · re:Invent のしおり</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20261122-nav4">
   <script src="data.js" defer></script>
   <script src="tour.js" defer></script>
   <script src="map-data.js" defer></script>
@@ -133,6 +133,10 @@
         </section>
 
         <section id="map-page" class="page" aria-label="MAPと移動時間" hidden>
+          <div class="card venue-guide-entry">
+            <div><h2>会場ガイド・ブース</h2><p>各会場の館内図と、空き時間に立ち寄れる展示・相談先。</p></div>
+            <a class="secondary-button" href="#guide">会場ガイドを開く</a>
+          </div>
           <div class="plan-switch"><div class="segmented" id="map-plan-mode" aria-label="MAPの行程"><button data-mode="plan" aria-pressed="true">おすすめ</button><button data-mode="run" aria-pressed="false">5K Run案</button></div></div>
           <div id="departure-result" class="departure-result" aria-live="polite"></div>
           <p class="plan-description" id="map-plan-note" hidden>5Kの送迎は2025年の実績を参考に仮置きしています。2026年の送迎の有無・乗り場・時刻は未確認です。Allegiant Stadiumはこの地図の範囲外で、送迎経路の線は描いていません。</p>
@@ -162,6 +166,7 @@
         </section>
 
         <section id="guide-page" class="page" aria-label="会場ガイド" hidden>
+          <p class="venue-guide-back"><a class="text-link" href="#map">MAP・移動時間に戻る</a></p>
           <div class="guide-toolbar">
             <label for="guide-venue"><span class="field-label">今いる会場</span><select id="guide-venue"></select></label>
             <div class="venue-guide-links" id="guide-venue-links"></div>
