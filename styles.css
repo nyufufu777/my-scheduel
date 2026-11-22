@@ -78,6 +78,17 @@ svg.icon { width: 20px; height: 20px; display: inline-block; flex: 0 0 auto; ver
 .topbar-label { color: var(--muted); font-size: .75rem; font-weight: 500; }
 .topbar-slash { display: inline-block; margin: 0 12px; color: var(--muted); opacity: .65; }
 .topbar #topbar-page { color: var(--ink); }
+.topbar-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.topbar-actions [aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+.document-note { color: var(--muted); font-size: .8125rem; margin-bottom: 18px; }
+.document-list { display: grid; gap: 20px; margin-bottom: 20px; }
+.document-card { padding: 22px 24px; min-width: 0; }
+.document-meta { color: var(--muted); font-size: .8125rem; margin-top: 6px; }
+.document-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
+.document-actions .secondary-button { margin-top: 0; }
+.document-preview { margin-top: 18px; border-top: 1px solid var(--line); }
+.document-preview summary { min-height: 44px; padding: 12px 0; cursor: pointer; font-size: .875rem; font-weight: 600; }
+.document-preview iframe { display: block; width: 100%; height: 75vh; min-height: 360px; border: 1px solid var(--line); border-radius: 8px; background: var(--soft); }
 .text-link { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 4px 0; color: var(--accent); font-weight: 550; font-size: .75rem; background: transparent; }
 .text-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .text-link .icon { width: 15px; height: 15px; }
