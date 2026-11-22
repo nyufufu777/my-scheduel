@@ -781,3 +781,49 @@ dialog::backdrop { background: #0d162d66; }
   body[data-page="airport"] .airport-personal textarea, body[data-page="airport"] #airport-memo-status { display: none; }
   body[data-page="airport"] .airport-memo-print { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; min-height: 60pt; }
 }
+
+/* Secondary reference page, reached alongside the original PDFs. */
+.local-intro, .local-source-note { color: var(--muted); font-size: .875rem; line-height: 1.8; margin-bottom: 22px; }
+.local-guide-content { display: grid; gap: 14px; margin-bottom: 24px; }
+.local-topic { min-width: 0; overflow: hidden; }
+.local-topic > summary { min-height: 72px; cursor: pointer; padding: 20px 24px; font-size: 1rem; }
+.local-topic > summary > span { display: inline-flex; flex-direction: column; vertical-align: middle; max-width: calc(100% - 24px); }
+.local-topic summary strong { font-weight: 650; }
+.local-topic summary small { margin-top: 4px; font-size: .875rem; color: var(--muted); }
+.local-topic-body { padding: 0 24px 24px; }
+.local-topic-intro { font-size: 1rem; line-height: 1.8; margin-bottom: 18px; }
+.local-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+.local-tip-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: .875rem; line-height: 1.8; }
+.local-tip-table th, .local-tip-table td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.local-tip-table thead th { font-weight: 600; background: var(--soft); }
+.local-tip-table th:first-child { width: 28%; }
+.local-tip-table thead th:nth-child(2) { width: 25%; }
+.local-tip-table tbody tr:last-child > * { border-bottom: 0; }
+.local-notes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 28px; }
+.local-table-wrap + .local-notes { margin-top: 24px; }
+.local-note { min-width: 0; }
+.local-note h3 { font-size: 1rem; margin: 5px 0 7px; }
+.local-note p { font-size: 1rem; color: var(--muted); line-height: 1.85; overflow-wrap: anywhere; }
+.local-type { display: inline-block; font-size: .8125rem; color: var(--accent); }
+.local-sources { display: flex; flex-wrap: wrap; gap: 2px 20px; border-top: 1px solid var(--line); margin-top: 24px; padding-top: 10px; }
+.local-sources a { display: inline-flex; align-items: center; min-height: 44px; font-size: .875rem; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.local-tip-calculator { margin-top: 24px; padding: 20px; border-radius: 12px; background: var(--soft); }
+.local-tip-calculator > p { margin-top: 8px; font-size: .875rem; color: var(--muted); }
+.local-tip-fields { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 14px; margin-top: 16px; max-width: 480px; }
+.local-tip-fields label { display: flex; flex-direction: column; gap: 7px; font-size: .875rem; }
+.local-tip-fields input, .local-tip-fields select { min-width: 0; width: 100%; min-height: 44px; padding: 8px 12px; background: var(--surface); border: 1px solid var(--line); font-size: 1rem; }
+.local-tip-calculator .local-tip-result { color: var(--ink); font-size: 1rem; line-height: 1.8; font-weight: 600; margin-top: 16px; }
+@media (max-width: 959px) {
+  .local-notes { grid-template-columns: 1fr; }
+}
+@media (max-width: 699px) {
+  .topbar-actions .external-link { display: none; }
+  .topbar-label { min-width: 0; }
+  .topbar-actions { gap: 10px; }
+  .topbar-actions .text-link { min-height: 44px; font-size: .75rem; white-space: nowrap; }
+  .local-topic > summary { padding: 18px; }
+  .local-topic-body { padding: 0 18px 20px; }
+  .local-tip-table th, .local-tip-table td { padding: 9px 7px; }
+  .local-tip-table { font-size: .8125rem; }
+  .local-tip-calculator { padding: 16px; }
+}
